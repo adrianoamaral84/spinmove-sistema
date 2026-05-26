@@ -12,7 +12,7 @@
 
     <div class="card-body">
 
-        <form action="{{ route('bikes.update', $bike->id) }}"
+        <form action="{{ route('bikes.update', $bike->uuid) }}"
               method="POST">
 
             @csrf

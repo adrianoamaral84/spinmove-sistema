@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUuid;
 
 class Lead extends Model
 {
+        use HasUuid;
    protected $fillable = [
         'telefone',
         'nome',

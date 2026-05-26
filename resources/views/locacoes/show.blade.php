@@ -54,7 +54,7 @@
 
                         <strong>Cliente</strong><br>
 
-                        <a href="{{ route('clientes.show', $locacao->cliente->id) }}">
+                        <a href="{{ route('clientes.show', $locacao->cliente->uuid) }}">
 
     {{ $locacao->cliente->nome }}
 
@@ -427,14 +427,14 @@ $locacao->data_vencimento
 
                 </a>
 
-                <form action="{{ route('locacoes.renovar', $locacao->id) }}"
+                <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
                       method="POST">
 
                     @csrf
 
                     <button type="button" class="btn btn-info btn-block mb-2"
         data-toggle="modal"
-        data-target="#renovarModal{{ $locacao->id }}">
+        data-target="#renovarModal{{ $locacao->uuid }}">
     
     <i class="fas fa-sync"></i>
 Renovar
@@ -770,12 +770,12 @@ $novaData =
 
 
 <div class="modal fade"
-     id="renovarModal{{ $locacao->id }}"
+     id="renovarModal{{ $locacao->uuid }}"
      tabindex="-1">
 
     <div class="modal-dialog">
 
-        <form action="{{ route('locacoes.renovar', $locacao->id) }}"
+        <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
               method="POST">
 
             @csrf
@@ -881,7 +881,7 @@ $novaData =
 
     <div class="modal-dialog">
 
-        <form action="{{ route('locacoes.pagamento', $locacao->id) }}"
+        <form action="{{ route('locacoes.pagamento', $locacao->uuid) }}"
               method="POST">
 
             @csrf

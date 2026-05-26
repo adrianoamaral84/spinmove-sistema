@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUuid;
 
 class Conversa extends Model
 {
+        use HasUuid;
     protected $fillable = [
         'telefone',
         'nome',

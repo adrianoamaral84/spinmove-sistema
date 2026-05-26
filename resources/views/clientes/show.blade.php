@@ -289,7 +289,7 @@
 
             </a>
 
-            <a href="{{ route('clientes.edit', $cliente->id) }}"
+            <a href="{{ route('clientes.edit', $cliente) }}"
                class="btn btn-warning mr-2 mb-2">
 
                 <i class="fas fa-edit"></i>
@@ -298,7 +298,7 @@
 
             </a>
 
-            <a href="{{ route('clientes.locacao.create',$cliente->id) }}?cliente={{ $cliente->id }}"
+            <a href="{{ route('clientes.locacao.create',$cliente) }}?cliente={{ $cliente->uuid }}"
                class="btn btn-primary mr-2 mb-2">
 
                 <i class="fas fa-plus"></i>

@@ -11,7 +11,8 @@ use Carbon\Carbon;
 use App\Models\Plano;
 use App\Models\Conversa;
 use App\Models\Mensagem;
-
+use App\Models\Notification;
+use App\Services\ClienteService;
 
 class ClienteController extends Controller
 {
@@ -260,83 +261,21 @@ now()->subDays(7)
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreClienteRequest $request)
+   public function store(StoreClienteRequest $request, ClienteService $service)
 {
-date_default_timezone_set('America/Sao_Paulo');
+    $cliente = $service->criar($request->validated());
 
-   $clienteExistente = Cliente::where('cpf', $request->cpf)->first();
-
-    if ($clienteExistente) {
-        return response()->json([
-            'message' => 'Cliente já cadastrado',
-            'cliente' => $clienteExistente
-        ]);
-    }
-
-
-    $plano = Plano::find($request->plano_id);
-
-$dataVencimento = null;
-
-if ($plano) {
-    $dataVencimento = Carbon::today()
-        ->addDays($plano->duracao_dias)
-        ->format('Y-m-d');
-}
-
-$conversa = Conversa::where('telefone', $request->telefone)->first();
-$data = $request->validated();
-
-//$data['data_vencimento'] = $dataVencimento;
-$data['conversa_id'] = $conversa->id ?? null;
-
-/*
-// Comeco codigo maps
-$endereco = $request->endereco . ', ' .
-             $request->bairro;
-             
-
-$apiKey = env('GOOGLE_MAPS_API_KEY');
-
-$url = "https://maps.googleapis.com/maps/api/geocode/json?address=" .
-        urlencode($endereco) .
-        "&key={$apiKey}";
-
-$response = file_get_contents($url);
-
-$data = json_decode($response, true);
-
-$latitude = null;
-$longitude = null;
-
-if (!empty($data['results'])) {
-
-    $latitude =
-        $data['results'][0]['geometry']['location']['lat'];
-
-    $longitude =
-        $data['results'][0]['geometry']['location']['lng'];
-}
-// Final codigo maps
-dd($response);
-*/
-Cliente::create($data);
-
-
-    //Cliente::create($request->validated());
-
-    return redirect()->route('clientes.index')
-    ->with('success', 'Cliente cadastrado com sucesso!');
+    return redirect()
+        ->route('clientes.index')
+        ->with('success', 'Cliente cadastrado com sucesso!');
 }
 
     
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Cliente $cliente)
 {
-    $cliente = Cliente::findOrFail($id);
-    
     return view('clientes.show', compact('cliente'));
 }
 

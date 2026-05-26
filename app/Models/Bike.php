@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Traits\HasUuid;
 
 class Bike extends Model
 {
+    use HasUuid;
     protected $fillable = [
 
         'codigo',
@@ -37,7 +40,6 @@ public function locacoes()
 {
     return $this->hasMany(Locacao::class);
 }
-
 
 
 }

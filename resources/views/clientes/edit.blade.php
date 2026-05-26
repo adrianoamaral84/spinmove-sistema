@@ -9,7 +9,7 @@
 @section('content')
 
 
-            <form method="POST" action="{{ route('clientes.update', $cliente->id) }}">
+            <form method="POST" action="{{ route('clientes.update', $cliente->uuid) }}">
                 @csrf
                 @method('PUT')
 

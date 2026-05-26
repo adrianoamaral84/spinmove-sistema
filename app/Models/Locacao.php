@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Traits\HasUuid;
 
 class Locacao extends Model
 {
+    use HasUuid;
     protected $table = 'locacoes';
     
     protected $fillable = [
@@ -44,6 +47,21 @@ public function renovacoes()
 public function pagamentos()
 {
     return $this->hasMany(Pagamento::class);
+}
+protected static function booted()
+{
+    static::creating(function ($locacao) {
+
+        if (!$locacao->uuid) {
+            $locacao->uuid = Str::uuid();
+        }
+
+    });
+}
+
+public function getRouteKeyName()
+{
+    return 'uuid';
 }
 
 }

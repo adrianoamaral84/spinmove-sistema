@@ -83,14 +83,14 @@
 
                     <div class="d-flex align-items-center">
 
-                        <a href="{{ route('clientes.show', $cliente->id) }}"
+                        <a href="{{ route('clientes.show', $cliente) }}"
                            class="btn btn-info btn-sm mr-1">
 
                             <i class="fas fa-eye"></i>
 
                         </a>
 
-                        <a href="{{ route('clientes.edit', $cliente->id) }}"
+                        <a href="{{ route('clientes.edit', $cliente) }}"
                            class="btn btn-warning btn-sm mr-1">
 
                             <i class="fas fa-edit"></i>
@@ -105,7 +105,7 @@
 
                         </a>
 
-                        <a href="{{ route('clientes.locacao.create',$cliente->id) }}?cliente={{ $cliente->id }}"
+                        <a href="{{ route('clientes.locacao.create',$cliente) }}?cliente={{ $cliente->uuid }}"
                            class="btn btn-primary btn-sm">
 
                             <i class="fas fa-plus"></i>

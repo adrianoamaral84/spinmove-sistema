@@ -135,7 +135,7 @@
                 <tr>
 
                     <td>
-                        <a href="{{ route('clientes.show', $locacao->cliente->id) }}" class="btn btn-info btn-sm">
+                        <a href="{{ route('clientes.show', $locacao->cliente) }}" class="btn btn-info btn-sm">
             {{ $locacao->cliente->nome ?? '-' }}
                 </a>
                        
@@ -345,7 +345,7 @@ foreach ($cobrancas as $cobranca) {
 
                         <div class="d-flex align-items-center">
 
-    <a href="{{ route('locacoes.show', $locacao->id) }}"
+    <a href="{{ route('locacoes.show', $locacao->uuid) }}"
        class="btn btn-info btn-sm mr-1" title="Ver">
 
         <i class="fas fa-eye"></i>
@@ -366,7 +366,7 @@ foreach ($cobrancas as $cobranca) {
 
 <button class="btn btn-success btn-sm mr-1"
         data-toggle="modal"
-        data-target="#entregaModal{{ $locacao->id }}" title="Entregar Bike">
+        data-target="#entregaModal{{ $locacao->uuid }}" title="Entregar Bike">
 
     <i class="fas fa-check"></i>
 
@@ -378,7 +378,7 @@ foreach ($cobrancas as $cobranca) {
 
     @if($locacao->status != 'aguardando_entrega')
 
-    <form action="{{ route('locacoes.renovar', $locacao->id) }}"
+    <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
           method="POST"
           class="mr-1"
           style="display:inline-block">
@@ -397,7 +397,7 @@ foreach ($cobrancas as $cobranca) {
 
 
     @if($locacao->status == 'aguardando_retirada')
-  <form action="{{ route('locacoes.devolver', $locacao->id) }}"
+  <form action="{{ route('locacoes.devolver', $locacao->uuid) }}"
           method="POST"
           class="mr-1"
           style="display:inline-block">
@@ -406,7 +406,7 @@ foreach ($cobrancas as $cobranca) {
 
         <button type="button" class="btn btn-danger btn-sm"
         data-toggle="modal"
-        data-target="#devolverModal{{ $locacao->id }}" title="Retirar Bike">
+        data-target="#devolverModal{{ $locacao->uuid }}" title="Retirar Bike">
 
     <i class="fas fa-undo"></i>
 
@@ -564,12 +564,12 @@ foreach ($cobrancas as $cobranca) {
 
 
 <div class="modal fade"
-     id="entregaModal{{ $locacao->id }}"
+     id="entregaModal{{ $locacao->uuid }}"
      tabindex="-1">
 
     <div class="modal-dialog">
 
-        <form action="{{ route('locacoes.entregar', $locacao->id) }}"
+        <form action="{{ route('locacoes.entregar', $locacao) }}"
               method="POST">
 
             @csrf

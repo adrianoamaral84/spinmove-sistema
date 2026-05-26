@@ -9,7 +9,122 @@
     <h1 class="mb-4">
         Dashboard SpinMove
     </h1>
+    <div class="mb-3">
 
+
+    
+
+</div>
+
+
+<div class="card">
+
+<div class="card-header">
+
+<h3>
+
+Últimos cadastros recebidos
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+@forelse($topNotifications ?? [] as $item)
+
+<div class="border-bottom pb-3 mb-3">
+
+<div class="d-flex justify-content-between">
+
+<div>
+
+<span class="badge badge-success">
+
+NOVO
+
+</span>
+
+<strong>
+
+{{ $item->titulo }}
+
+</strong>
+
+</div>
+
+<small class="text-muted">
+
+{{ $item->created_at->diffForHumans() }}
+
+</small>
+
+</div>
+
+
+<div class="mt-2">
+
+👤 {{ $item->nome_cliente }}
+
+<br>
+
+📞 {{ $item->telefone }}
+
+<br>
+
+🚴 {{ $item->plano->nome ?? '-' }}
+
+</div>
+<div class="mt-3">
+
+<a
+
+href="{{ route(
+'clientes.show',
+$item->cliente_id
+) }}"
+
+class="
+btn
+btn-sm
+btn-primary">
+
+Abrir cadastro
+
+</a>
+
+
+<a
+
+href="https://wa.me/55{{ preg_replace('/\D/','',$item->telefone) }}"
+
+target="_blank"
+
+class="
+btn
+btn-sm
+btn-success">
+
+WhatsApp
+
+</a>
+
+</div>
+</div>
+
+@empty
+
+<div class="alert alert-light">
+
+Sem notificações
+
+</div>
+
+@endforelse
+
+</div>
+
+</div>
     <div class="row">
 
         <div class="col-lg-3">

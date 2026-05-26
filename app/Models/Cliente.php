@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Traits\HasUuid;
+
 
 class Cliente extends Model
 {
+    use HasUuid;
     use SoftDeletes;
     protected $fillable = [
 
@@ -104,4 +108,17 @@ public function locacoes()
 {
     return $this->hasMany(Locacao::class);
 }
+
+public function getTelefoneFormatadoAttribute()
+{
+    return preg_replace(
+        "/(\d{2})(\d{5})(\d{4})/",
+        '($1) $2-$3',
+        $this->telefone
+    );
+}
+
+
+
+
 }

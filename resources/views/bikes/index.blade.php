@@ -324,14 +324,14 @@ Nenhuma retirada.
             </td>
 
             <td>
-<a href="{{ route('bikes.show', $bike->id) }}"
+<a href="{{ route('bikes.show', $bike->uuid) }}"
    class="btn btn-info btn-sm">
 
     <i class="fas fa-eye"></i>
 
 </a>
 
-<a href="{{ route('bikes.edit', $bike->id) }}"
+<a href="{{ route('bikes.edit', $bike->uuid) }}"
    class="btn btn-warning btn-sm">
 
     <i class="fas fa-edit"></i>
@@ -343,7 +343,7 @@ Nenhuma retirada.
         class="btn btn-danger btn-sm btn-vender"
         data-toggle="modal"
         data-target="#modalVenderBike"
-        data-id="{{ $bike->id }}"
+        data-id="{{ $bike->uuid }}"
         data-modelo="{{ $bike->modelo }}">
     Vender
 </button>
@@ -360,7 +360,7 @@ Nenhuma retirada.
         class="btn btn-primary btn-sm btn-alugar"
         data-toggle="modal"
         data-target="#modalAlugarBike"
-        data-id="{{ $bike->id }}"
+        data-id="{{ $bike->uuid }}"
         data-modelo="{{ $bike->modelo }}">
     Alugar
 </button>

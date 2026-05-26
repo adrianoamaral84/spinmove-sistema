@@ -34,6 +34,8 @@ class PlanoController extends Controller
         'duracao_dias' => 'required|integer'
     ]);
 
+    
+
     \App\Models\Plano::create($request->all());
 
     return redirect()->route('planos.index')->with('success', 'Plano criado com sucesso');
@@ -62,6 +64,7 @@ class PlanoController extends Controller
     public function update(Request $request, $id)
 {
     $plano = \App\Models\Plano::findOrFail($id);
+    $plano->valor_mensal = $plano->valor / $plano->duracao_dias;
 
     $plano->update($request->all());
 

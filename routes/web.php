@@ -15,6 +15,8 @@ use App\Http\Controllers\VendaController;
 use App\Http\Controllers\LocacaoController;
 use App\Http\Controllers\FinanceiroController;
 use App\Http\Controllers\CadastroPublicoController;
+use App\Http\Controllers\NotificationController;
+
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -171,6 +173,20 @@ Route::get('/cadastro-cliente',[CadastroPublicoController::class,'create'])->nam
 Route::post('/cadastro-cliente',[CadastroPublicoController::class,'store'])->name('cadastro.publico.store');
 
 
+Route::post(
 
+'/notificacoes/{id}/lida',
+
+[
+
+NotificationController::class,
+
+'marcar'
+
+]
+
+)->middleware(
+'auth'
+);
 
 require __DIR__.'/auth.php';

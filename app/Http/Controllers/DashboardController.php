@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Locacao;
 use App\Models\Pagamento;
 use App\Models\LocacaoRenovacao;
+use App\Models\Notification;
 
 class DashboardController extends Controller
 {
@@ -14,6 +15,32 @@ class DashboardController extends Controller
     public function index()
 {
 
+    $notifications =
+Notification::with(
+'plano'
+)
+->latest()
+->take(10)
+->get();
+
+
+    $naoLidas =
+        Notification::where(
+            'lida',
+            false
+        )->count();
+        
+     // MARCA COMO LIDA
+   $ids =
+$notifications
+->pluck('id');
+
+Notification::whereIn(
+'id',
+$ids
+)->update([
+'lida'=>true
+]);
     // OPERAÇÃO
 
     $totalBikes = Bike::count();
@@ -148,7 +175,9 @@ foreach ($cobrancas as $cobranca) {
             'recebidoMes',
             'cobrancasPendentes',
             'renovacoesMes',
-            'atrasados'
+            'atrasados',
+            'notifications',
+            'naoLidas'
 
         )
     );

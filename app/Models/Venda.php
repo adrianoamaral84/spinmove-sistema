@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUuid;
 
 class Venda extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'bike_id',
         'valor',

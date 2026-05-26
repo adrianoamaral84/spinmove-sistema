@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html>
 
@@ -14,11 +17,28 @@ content="width=device-width,initial-scale=1">
 Cadastro SpinMove
 
 </title>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <link
 href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 rel="stylesheet">
+<style>
+.plano-card {
+    cursor: pointer;
+    transition: all .25s ease;
+    border: 2px solid transparent;
+}
 
+.plano-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.plano-card.selected {
+    border: 2px solid #ff7a00;
+    box-shadow: 0 0 0 4px rgba(255,122,0,.15);
+    transform: scale(1.03);
+}
+</style>
 <style>
 
 body{
@@ -88,13 +108,22 @@ Preencha seu cadastro
 </p>
 
 </div>
-
-<form
-method="POST"
-action="{{ route('cadastro.publico.store') }}"
->
-
-@csrf
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+<form method="POST" action="{{ route('cadastro.publico.store') }}">
+    @csrf
 
 <div class="card">
 
@@ -308,51 +337,202 @@ Viúvo
 
 <hr>
 
-<div class="section">
+<div class="col-md-12 mb-3">
 
-Plano desejado
+<label>
 
-</div>
+Como conheceu a SpinMove?
+
+</label>
 
 <select
-name="plano_id"
-class="form-control mb-4">
+name="origem"
+class="form-control"
+required
+>
 
-<option>
+<option value="">
 
 Selecione
 
 </option>
 
-@foreach($planos as $plano)
+<option value="Instagram">
 
-<option
-value="{{ $plano->id }}"
->
-
-{{ $plano->nome }}
-
--
-
-R$
-
-{{ number_format(
-$plano->valor,
-2,
-',',
-'.'
-) }}
+Instagram
 
 </option>
 
-@endforeach
+<option value="Indicação">
+
+Indicação
+
+</option>
+
+<option value="Google">
+
+Google
+
+</option>
+
+<option value="Facebook">
+
+Facebook
+
+</option>
+
+<option value="Passando na rua">
+
+Passando na rua
+
+</option>
+
+<option value="Outro">
+
+Outro
+
+</option>
 
 </select>
 
-<button
-class="btn btn-warning w-100 btn-lg">
+</div>
 
-Enviar cadastro
+
+
+<hr>
+
+<div class="alert alert-light border mb-4">
+
+    <strong>Como funciona:</strong><br>
+
+    1. Escolha seu plano<br>
+    2. Receba sua bike em casa<br>
+    3. Pagamento somente na entrega<br><br>
+
+    <small class="text-muted">
+        Sem cobrança antecipada • Cancelamento simples • Entrega agendada
+    </small>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+@foreach($planos as $plano)
+
+@php
+    $isRecomendado = $plano->id == $recomendadoId;
+    $plano->nome_formatado = match ($plano->duracao_dias) {
+    90 => 'Plano 3 meses',
+    180 => 'Plano 6 meses',
+};
+@endphp
+
+<div class="col-md-6">
+
+    <div class="card plano-card h-100"
+         onclick="selecionarPlano(this, {{ $plano->id }})"
+         style="position:relative; cursor:pointer;">
+
+        @if($isRecomendado)
+            <span class="badge"
+                  style="position:absolute;top:10px;right:10px;background:#ff7a00;">
+                Recomendado para você
+            </span>
+        @endif
+
+        <div class="card-body p-4">
+
+            <h4 style="font-weight:700;">
+                {{ $plano->duracao_dias == 90 ? 'Plano 3 meses' : 'Plano 6 meses' }}
+            </h4>
+
+            <p class="text-muted">
+                {{ $plano->descricao }}
+            </p>
+
+            <h3 style="font-weight:800;">
+                R$ {{ number_format($plano->valor_mensal, 2, ',', '.') }}/mês
+            </h3>
+
+            <small class="text-muted">
+                {{ $plano->nome_formatado }} de acesso
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+@endforeach
+
+</div>
+<input type="hidden" name="plano_id" id="plano_id">
+
+
+<hr>
+
+<div class="alert alert-light border">
+
+<small>
+
+Ao enviar este cadastro você concorda com os termos da locação.
+
+<a
+href="#"
+data-bs-toggle="modal"
+data-bs-target="#modalTermos"
+>
+
+Ler termos completos
+
+</a>
+
+</small>
+
+</div>
+
+
+<div class="form-check mb-4">
+
+<input
+
+id="aceite"
+
+class="form-check-input"
+
+type="checkbox"
+
+name="aceite"
+
+required
+
+>
+
+<label
+for="aceite"
+class="form-check-label"
+>
+
+Li e concordo com os termos da locação SpinMove
+
+</label>
+
+</div>
+
+
+
+<button
+
+id="btnEnviar"
+
+disabled
+
+class="btn btn-warning w-100 btn-lg"
+
+>
+
+Aceite os termos para continuar
 
 </button>
 
@@ -367,6 +547,272 @@ Enviar cadastro
 </div>
 
 </div>
+
+
+
+
+
+<div
+class="modal fade"
+id="modalTermos"
+tabindex="-1"
+>
+
+<div class="modal-dialog modal-lg">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Termos da Locação SpinMove
+
+</h5>
+
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="modal"
+></button>
+
+</div>
+
+<div class="modal-body">
+
+
+
+
+<h6>
+
+1. Cadastro e informações
+
+</h6>
+
+<p>
+
+O cliente declara que todas as informações fornecidas neste cadastro são verdadeiras e poderão ser utilizadas pela SpinMove para fins de cadastro, contato, operação da locação e suporte.
+
+</p>
+
+
+<h6>
+
+2. Propriedade da bike
+
+</h6>
+
+<p>
+
+A bike disponibilizada permanece sendo propriedade da SpinMove durante todo o período da locação, não sendo permitida venda, cessão, empréstimo ou transferência para terceiros sem autorização.
+
+</p>
+
+
+<h6>
+
+3. Uso e conservação
+
+</h6>
+
+<p>
+
+O cliente se compromete a utilizar o equipamento de forma adequada, mantendo cuidados básicos de conservação e informando qualquer defeito, dano ou problema identificado.
+
+</p>
+
+
+<h6>
+
+4. Danos, perdas e avarias
+
+</h6>
+
+<p>
+
+Em caso de dano causado por mau uso, perda, extravio, furto ou avarias fora do desgaste natural do equipamento, poderão ser aplicadas cobranças correspondentes aos custos de reparo, manutenção ou reposição.
+
+</p>
+
+
+<h6>
+
+5. Pagamentos e renovação
+
+</h6>
+
+<p>
+
+A continuidade da locação depende da renovação do plano e da regularidade dos pagamentos conforme condições acordadas entre as partes.
+
+</p>
+
+
+<h6>
+
+6. Atrasos e inadimplência
+
+</h6>
+
+<p>
+
+Em caso de atraso nos pagamentos, a SpinMove poderá entrar em contato para regularização, suspender renovações, solicitar devolução do equipamento ou aplicar medidas previstas contratualmente.
+
+Persistindo a inadimplência, poderão ser adotadas medidas administrativas e legais para recuperação dos valores e do equipamento.
+
+</p>
+
+
+<h6>
+
+7. Retirada e devolução
+
+</h6>
+
+<p>
+
+A retirada e devolução do equipamento seguirão os procedimentos operacionais definidos pela SpinMove, mediante alinhamento prévio entre as partes.
+
+</p>
+
+
+<h6>
+
+8. Endereço de utilização
+
+</h6>
+
+<p>
+
+O cliente declara que o endereço informado será o principal local de utilização do equipamento, salvo comunicação prévia e autorização da SpinMove.
+
+</p>
+
+
+<h6>
+
+9. Acesso para retirada
+
+</h6>
+
+<p>
+
+Em caso de encerramento da locação ou necessidade operacional, o cliente compromete-se a disponibilizar acesso para retirada do equipamento mediante agendamento.
+
+</p>
+
+
+<h6>
+
+10. Documentos enviados
+
+</h6>
+
+<p>
+
+Os documentos e informações enviados poderão ser utilizados exclusivamente para validação cadastral, segurança operacional e controle interno da locação.
+
+</p>
+
+
+<h6>
+
+11. Privacidade e dados
+
+</h6>
+
+<p>
+
+Os dados coletados serão utilizados para operação da locação, contato e suporte, sendo tratados internamente pela SpinMove.
+
+</p>
+
+
+<h6>
+
+12. Aceite
+
+</h6>
+
+<p>
+
+Ao marcar a opção de aceite e enviar este cadastro, o cliente declara que leu, compreendeu e concorda com os termos apresentados.
+
+</p>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="btn btn-secondary"
+data-bs-dismiss="modal"
+>
+
+Fechar
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+<script>
+
+const aceite =
+
+document.getElementById(
+'aceite'
+);
+
+const botao =
+
+document.getElementById(
+'btnEnviar'
+);
+
+
+aceite.addEventListener(
+
+'change',
+
+function(){
+
+if(
+this.checked
+){
+
+botao.disabled =
+false;
+
+botao.innerHTML =
+'Enviar cadastro';
+
+}
+else{
+
+botao.disabled =
+true;
+
+botao.innerHTML =
+
+'Aceite os termos para continuar';
+
+}
+
+}
+
+);
+
+</script>
+
 
 <script>
 
@@ -445,5 +891,31 @@ value;
 </script>
 
 </body>
+<script>
 
+function selecionarPlano(el, planoId) {
+
+    document.querySelectorAll('.plano-card')
+        .forEach(card =>
+            card.classList.remove('selected')
+        );
+
+    el.classList.add('selected');
+
+    document.getElementById(
+        'plano_id'
+    ).value = planoId;
+
+    const btn =
+        document.getElementById(
+            'btnEnviar'
+        );
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+        'Confirmar solicitação';
+}
+
+</script>
 </html>

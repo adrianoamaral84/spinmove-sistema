@@ -1,3 +1,4 @@
+AAA TESTE NAV
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,38 +20,325 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+            <!-- Notificações + Usuário -->
+<!-- Notificação + usuário -->
+<div class="flex items-center ms-6 gap-4">
 
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
+    <!-- NOTIFICAÇÕES -->
+    <div class="relative">
 
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
+        <button
+            onclick="
+                document
+                .getElementById(
+                    'notifDropdown'
+                )
+                .classList
+                .toggle(
+                    'hidden'
+                )
+            "
+            class="
+            relative
+            text-gray-600
+            hover:text-gray-800
+            ">
 
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+            🔔
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+            @if($topCount > 0)
+
+            <span class="
+                absolute
+                -top-2
+                -right-2
+                bg-red-500
+                text-white
+                rounded-full
+                text-xs
+                px-2
+                py-0.5">
+
+                {{ $topCount }}
+
+            </span>
+
+            @endif
+
+        </button>
+
+        <div
+            id="notifDropdown"
+
+            class="
+            hidden
+            absolute
+            right-0
+            mt-2
+            w-80
+            bg-white
+            rounded-lg
+            shadow-lg
+            border
+            z-50">
+
+            <div class="p-3 font-bold">
+
+                Notificações
+
             </div>
+
+            @forelse(
+                $topNotifications
+                as $item
+            )
+
+            <div class="
+                px-4
+                py-3
+                border-t
+                text-sm">
+
+                <strong>
+
+                    {{ $item->titulo }}
+
+                </strong>
+
+                <br>
+
+                Nome:
+                {{ $item->nome_cliente }}
+
+                <br>
+
+                Telefone:
+                {{ $item->telefone }}
+
+                <br>
+
+                Plano:
+                {{ $item->plano->nome ?? '-' }}
+
+            </div>
+
+            @empty
+
+            <div class="p-4 text-gray-500">
+
+                Nenhuma notificação
+
+            </div>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
+<div class="relative">
+
+<button
+onclick="
+document
+.getElementById(
+'notifDropdown'
+)
+.classList.toggle(
+'hidden'
+)
+"
+
+class="
+relative
+text-xl
+">
+
+🔔
+
+@if(isset($topCount)
+&& $topCount > 0)
+
+<span class="
+absolute
+-top-2
+-right-2
+
+bg-red-500
+
+text-white
+
+rounded-full
+
+px-2
+
+text-xs
+">
+
+{{ $topCount }}
+
+</span>
+
+@endif
+
+</button>
+
+
+<div
+
+id="notifDropdown"
+
+class="
+hidden
+
+absolute
+
+right-0
+
+mt-2
+
+w-80
+
+bg-white
+
+shadow-lg
+
+rounded-lg
+
+border
+
+z-50
+">
+
+<div class="
+p-3
+font-bold
+">
+
+Notificações
+
+</div>
+
+
+@forelse(
+$topNotifications ?? []
+as $item
+)
+
+<div class="
+border-t
+p-3
+text-sm
+">
+
+<b>
+
+{{ $item->titulo }}
+
+</b>
+
+<br>
+
+{{ $item->nome_cliente }}
+
+<br>
+
+{{ $item->telefone }}
+
+</div>
+
+@empty
+
+<div class="p-3">
+
+Sem notificações
+
+</div>
+
+@endforelse
+
+</div>
+
+</div>
+    <!-- DROPDOWN USUÁRIO -->
+    <x-dropdown align="right" width="48">
+
+        <x-slot name="trigger">
+
+            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700">
+
+                <div>
+
+                    {{ Auth::user()->name }}
+
+                </div>
+
+                <div class="ms-1">
+
+                    <svg class="fill-current h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20">
+
+                        <path
+                        fill-rule="evenodd"
+
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+
+                        clip-rule="evenodd"/>
+
+                    </svg>
+
+                </div>
+
+            </button>
+
+        </x-slot>
+
+        <x-slot name="content">
+
+            <x-dropdown-link
+            :href="
+            route(
+            'profile.edit'
+            )
+            ">
+
+                Profile
+
+            </x-dropdown-link>
+
+            <form
+                method="POST"
+                action="{{ route('logout') }}">
+
+                @csrf
+
+                <x-dropdown-link
+                :href="
+                route(
+                'logout'
+                )
+                "
+
+                onclick="
+                event.preventDefault();
+
+                this.closest(
+                'form'
+                ).submit();
+                ">
+
+                    Log Out
+
+                </x-dropdown-link>
+
+            </form>
+
+        </x-slot>
+
+    </x-dropdown>
+
+</div>
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">

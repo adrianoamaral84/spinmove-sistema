@@ -59,14 +59,16 @@ date_default_timezone_set('America/Sao_Paulo');
 
 public function show($id)
 {
+    
     date_default_timezone_set('America/Sao_Paulo');
+   
     $locacao = Locacao::with([
-        'cliente',
-        'bike',
-        'plano',
-        'renovacoes',
-        //'pagamentos'
-    ])->findOrFail($id);
+    'cliente',
+    'bike',
+    'plano',
+    'renovacoes',
+])->where('uuid', $id)
+  ->firstOrFail();
 $planos = Plano::all();
     return view(
         'locacoes.show',
@@ -147,6 +149,7 @@ public function create()
 
 public function renovar(Request $request, Locacao $locacao)
 {
+    
     date_default_timezone_set('America/Sao_Paulo');
     $request->validate([
 
@@ -290,6 +293,7 @@ public function registrarPagamento(
     Locacao $locacao
 )
 {
+
 
     $valorRestante = $request->valor;
 
