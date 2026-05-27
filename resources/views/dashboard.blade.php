@@ -6,15 +6,17 @@
 
 <div class="container-fluid">
 
-    <h1 class="mb-4">
+    <h2 class="mb-4">
         Dashboard SpinMove
-    </h1>
+    </h2>
     <div class="mb-3">
 
 
     
 
 </div>
+
+
 
 
 <div class="card">
@@ -76,12 +78,11 @@ NOVO
 
 </div>
 <div class="mt-3">
-
 <a
 
 href="{{ route(
 'clientes.show',
-$item->cliente_id
+$item->cliente
 ) }}"
 
 class="

@@ -240,4 +240,74 @@ public function vender(Request $request)
 }
 
 
+public function storeLote(Request $request)
+{
+    $data = $request->validate([
+        'quantidade' => 'required|integer|min:1',
+        'marca' => 'required',
+        'modelo' => 'required',
+        'valor_compra' => 'nullable',
+        'data_compra' => 'nullable',
+        'status' => 'required'
+    ]);
+
+    $ultimoId =
+        Bike::max('id') ?? 0;
+
+    for(
+        $i=1;
+        $i <= $data['quantidade'];
+        $i++
+    ){
+
+        $numero =
+            $ultimoId + $i;
+
+        Bike::create([
+
+           'codigo' =>
+
+strtoupper(
+    $request->prefixo ?? 'SM'
+)
+
+.'-'.
+
+str_pad(
+    $numero,
+    3,
+    '0',
+    STR_PAD_LEFT
+),
+
+            'modelo'=>
+            $data['modelo'],
+
+            'marca'=>
+            $data['marca'],
+
+            'valor_compra'=>
+            $data['valor_compra'],
+
+            'data_compra'=>
+            $data['data_compra'],
+
+            'status'=>
+            $data['status']
+
+        ]);
+
+    }
+
+    return response()->json([
+
+        'message'=>
+
+        $data['quantidade']
+
+        .' bikes criadas'
+
+    ]);
+}
+
 }

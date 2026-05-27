@@ -13,7 +13,7 @@ class ClienteService
     public function criar(array $data)
     {
                 date_default_timezone_set('America/Sao_Paulo');
-
+//dd($data);
         // evita duplicado (CPF)
         $cpf = preg_replace(
     '/\D/',

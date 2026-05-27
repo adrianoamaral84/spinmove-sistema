@@ -26,4 +26,11 @@ class Notification extends Model
         Plano::class
     );
 }
+
+public function cliente()
+{
+    return $this->belongsTo(
+        Cliente::class
+    );
+}
 }

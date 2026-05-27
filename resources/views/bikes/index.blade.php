@@ -223,11 +223,28 @@ Nenhuma retirada.
 </div>
 
 </div>
-<div class="mb-3">
-    <a href="{{ route('bikes.create') }}" class="btn btn-success">
+<div class="mb-3 d-flex flex-column flex-md-row">
+
+    <a href="{{ route('bikes.create') }}"
+       class="btn btn-success mb-2 mb-md-0 mr-md-2">
+
         <i class="fas fa-plus"></i>
+
         Nova Bike
+
     </a>
+
+    <button
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#modalLote">
+
+        <i class="fas fa-layer-group"></i>
+
+        Cadastrar em lote
+
+    </button>
+
 </div>
 
 <table class="table table-bordered table-hover">
@@ -509,6 +526,231 @@ Nenhuma retirada.
     </div>
 
 </div>
+
+<div class="modal fade"
+id="modalLote"
+tabindex="-1">
+
+<div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Cadastro em lote de bikes
+
+</h5>
+
+<button
+type="button"
+class="close"
+data-dismiss="modal">
+
+<span>&times;</span>
+
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="row">
+
+<div class="col-md-4 mb-3">
+
+<label>
+
+Quantidade
+
+</label>
+
+<input
+id="quantidade"
+type="number"
+min="1"
+value="10"
+class="form-control" oninput="atualizarPreview()">
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label>
+
+Marca
+
+</label>
+
+<input
+id="marca"
+class="form-control"
+placeholder="Ex: SpinMove">
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label>
+
+Modelo
+
+</label>
+
+<input
+id="modelo"
+class="form-control"
+placeholder="Ex: Bike Indoor">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Valor compra
+
+</label>
+
+<input
+id="valor_compra"
+type="number"
+step="0.01"
+class="form-control">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Data compra
+
+</label>
+
+<input
+id="data_compra"
+type="date"
+class="form-control">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Status inicial
+
+</label>
+
+<select
+id="status"
+class="form-control">
+
+<option value="disponivel">
+
+Disponível
+
+</option>
+
+<option value="manutencao">
+
+Manutenção
+
+</option>
+
+<option value="reservada">
+
+Reservada
+
+</option>
+<option value="inativa">
+
+Inativa
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Prefixo código
+
+</label>
+
+<input
+id="prefixo"
+class="form-control"
+value="SM"
+placeholder="SM" >
+
+<small class="text-muted">
+
+Ex: SM-001
+
+</small>
+
+</div>
+
+<div class="col-md-12 mb-3">
+
+<label>
+
+Observações
+
+</label>
+
+<textarea
+id="observacao"
+class="form-control"
+rows="3"
+placeholder="Lote compra maio / fornecedor X"></textarea>
+
+</div>
+
+</div>
+
+<div
+id="previewLote"
+class="alert alert-light">
+
+Nenhum lote gerado
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+type="button"
+class="btn btn-secondary"
+data-dismiss="modal">
+
+Cancelar
+
+</button>
+
+<button
+onclick="gerarLote()"
+class="btn btn-success">
+
+Criar lote
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 {{-- MODAL --}}
 <div class="modal fade" id="modalVenderBike" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -619,5 +861,132 @@ $(document).ready(function () {
 });
 
 </script>
+<script>
 
+async function gerarLote() {
+
+    try {
+
+        const response = await fetch(
+            '{{ route("bikes.lote.store") }}',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+
+                body: JSON.stringify({
+
+                    quantidade:
+                    document.getElementById(
+                        'quantidade'
+                    ).value,
+
+                    marca:
+                    document.getElementById(
+                        'marca'
+                    ).value,
+
+                    modelo:
+                    document.getElementById(
+                        'modelo'
+                    ).value,
+
+                    valor_compra:
+                    document.getElementById(
+                        'valor_compra'
+                    ).value,
+
+                    data_compra:
+                    document.getElementById(
+                        'data_compra'
+                    ).value,
+
+                    status:
+                    document.getElementById(
+                        'status'
+                    ).value,
+
+                    prefixo:
+    document.getElementById(
+        'prefixo'
+    ).value
+
+                })
+
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.message ??
+                'Erro no cadastro'
+            );
+
+            return;
+        }
+
+        $('#modalLote')
+            .modal('hide');
+
+        setTimeout(function () {
+
+            location.reload();
+
+        }, 500);
+
+    }
+    catch (err) {
+
+        console.error(err);
+
+        alert(
+            'Erro ao criar lote'
+        );
+
+    }
+
+}
+
+</script>
+<script>
+
+function atualizarPreview(){
+
+let qtd =
+document.getElementById(
+'quantidade'
+).value || 0;
+
+let prefixo =
+document.getElementById(
+'prefixo'
+).value || 'SM';
+
+document.getElementById(
+'previewLote'
+).innerHTML =
+
+`Serão criadas:
+
+<b>
+
+${prefixo}-001
+
+até
+
+${prefixo}-${qtd}
+
+</b>`;
+
+}
+
+</script>
 @stop

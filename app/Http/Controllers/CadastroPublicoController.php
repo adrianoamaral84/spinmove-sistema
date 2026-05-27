@@ -38,22 +38,38 @@ class CadastroPublicoController extends Controller{
 
 public function store(Request $request, ClienteService $service)
 {
-            date_default_timezone_set('America/Sao_Paulo');
-
+    date_default_timezone_set('America/Sao_Paulo');
+    
     $data = $request->validate([
         'nome' => 'required',
         'telefone' => 'required',
-        'cpf' => 'nullable',
-        'email' => 'nullable',
-        'data_nascimento' => 'nullable',
-        'altura' => 'nullable',
-        'endereco' => 'nullable',
-        'bairro' => 'nullable',
-        'profissao' => 'nullable',
-        'estado_civil' => 'nullable',
-        'origem' => 'nullable',
+        'cpf' => 'required',
+        'email' => 'required',
+        'data_nascimento' => 'required',
+        'altura' => 'required',
+        'endereco' => 'required',
+        'bairro' => 'required',
+        'profissao' => 'required',
+        'estado_civil' => 'required',
+        'origem' => 'required',
         'plano_id' => 'required|exists:planos,id'
-    ]);
+    ],[
+    'nome.required' => 'O nome é obrigatório.',
+    'telefone.required' => 'Informe o telefone.',
+    'cpf.required' => 'Informe o CPF.',
+    'email.required' => 'Informe o E-mail.',
+    'data_nascimento.required' => 'Informe a data de nascimento.',
+    'altura.required' => 'Informe a altura.',
+    'endereco.required' => 'Informe o endereco.',
+    'bairro.required' => 'Informe o bairro.',
+    'profissao.required' => 'Informe a profissao.',
+    'estado_civil.required' => 'Informe o estado civil.',
+    'origem.required' => 'Informe o onde nos conheceu.',
+    'plano_id.required' => 'Selecione um plano.',
+    'plano_id.exists' => 'O plano selecionado não existe.'
+]);
+
+    //dd($request->all());
         
     $service->criar($data);
     //return redirect()->back()->with('success', 'Cadastro realizado com sucesso!');

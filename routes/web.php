@@ -189,4 +189,9 @@ NotificationController::class,
 'auth'
 );
 
+
+
+
+
+Route::post('/bikes/lote',[BikeController::class,'storeLote'])->name('bikes.lote.store');
 require __DIR__.'/auth.php';

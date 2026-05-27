@@ -236,8 +236,8 @@ Solteiro(a)
 Divorciado(a)
 </option>
 
-<option value="Viúvo">
-Viúvo
+<option value="Viúvo(a)">
+Viúvo(a)
 </option>
 
 </select>

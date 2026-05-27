@@ -17,7 +17,8 @@ class DashboardController extends Controller
 
     $notifications =
 Notification::with(
-'plano'
+'plano',
+'cliente'
 )
 ->latest()
 ->take(10)

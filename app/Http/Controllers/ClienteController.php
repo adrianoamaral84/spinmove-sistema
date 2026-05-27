@@ -263,6 +263,7 @@ now()->subDays(7)
      */
    public function store(StoreClienteRequest $request, ClienteService $service)
 {
+    dd("form privado");
     $cliente = $service->criar($request->validated());
 
     return redirect()

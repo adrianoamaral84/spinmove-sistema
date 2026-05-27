@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html>
 
@@ -122,7 +119,7 @@ Preencha seu cadastro
         {{ session('success') }}
     </div>
 @endif
-<form method="POST" action="{{ route('cadastro.publico.store') }}">
+<form method="POST" id="cadastroForm" action="{{ route('cadastro.publico.store') }}">
     @csrf
 
 <div class="card">
@@ -148,6 +145,7 @@ Nome completo
 <input
 name="nome"
 class="form-control"
+value="{{ old('nome') }}"
 required>
 
 </div>
@@ -164,6 +162,7 @@ Telefone
 id="telefone"
 name="telefone"
 class="form-control"
+value="{{ old('telefone') }}"
 required>
 
 </div>
@@ -179,7 +178,10 @@ CPF
 <input
 id="cpf"
 name="cpf"
-class="form-control">
+class="form-control"
+value="{{ old('cpf') }}"
+required
+maxlength="14">
 
 </div>
 
@@ -194,7 +196,9 @@ Email
 <input
 name="email"
 type="email"
-class="form-control">
+class="form-control"
+value="{{ old('email') }}"
+required>
 
 </div>
 
@@ -209,7 +213,9 @@ Nascimento
 <input
 type="date"
 name="data_nascimento"
-class="form-control">
+class="form-control"
+value="{{ old('data_nascimento') }}"
+required>
 
 </div>
 
@@ -223,7 +229,9 @@ Altura
 
 <input
 name="altura"
-class="form-control">
+class="form-control"
+value="{{ old('altura') }}"
+required>
 
 </div>
 
@@ -249,7 +257,9 @@ Endereço
 
 <input
 name="endereco"
-class="form-control">
+class="form-control"
+value="{{ old('endereco') }}"
+required>
 
 </div>
 
@@ -263,7 +273,9 @@ Bairro
 
 <input
 name="bairro"
-class="form-control">
+class="form-control"
+value="{{ old('bairro') }}"
+required>
 
 </div>
 
@@ -289,7 +301,9 @@ Profissão
 
 <input
 name="profissao"
-class="form-control">
+class="form-control"
+value="{{ old('profissao') }}"
+required>
 
 </div>
 
@@ -303,30 +317,27 @@ Estado civil
 
 <select
 name="estado_civil"
-class="form-control">
+class="form-control"
+required>
 
-<option>
-
+<option value="Solteiro(a)"
+{{ old('estado_civil')=='Solteiro(a)' ? 'selected':'' }}>
 Solteiro(a)
-
 </option>
 
-<option>
-
+<option value="Casado(a)"
+{{ old('estado_civil')=='Casado(a)' ? 'selected':'' }}>
 Casado(a)
-
 </option>
 
-<option>
-
+<option value="Divorciado(a)"
+{{ old('estado_civil')=='Divorciado(a)' ? 'selected':'' }}>
 Divorciado(a)
-
 </option>
 
-<option>
-
+<option value="Viúvo(a)"
+{{ old('estado_civil')=='Viúvo(a)' ? 'selected':'' }}>
 Viúvo
-
 </option>
 
 </select>
@@ -348,49 +359,40 @@ Como conheceu a SpinMove?
 <select
 name="origem"
 class="form-control"
-required
->
+required>
 
 <option value="">
-
 Selecione
-
 </option>
 
-<option value="Instagram">
-
+<option value="Instagram"
+{{ old('origem')=='Instagram' ? 'selected':'' }}>
 Instagram
-
 </option>
 
-<option value="Indicação">
-
+<option value="Indicação"
+{{ old('origem')=='Indicação' ? 'selected':'' }}>
 Indicação
-
 </option>
 
-<option value="Google">
-
+<option value="Google"
+{{ old('origem')=='Google' ? 'selected':'' }}>
 Google
-
 </option>
 
-<option value="Facebook">
-
+<option value="Facebook"
+{{ old('origem')=='Facebook' ? 'selected':'' }}>
 Facebook
-
 </option>
 
-<option value="Passando na rua">
-
+<option value="Passando na rua"
+{{ old('origem')=='Passando na rua' ? 'selected':'' }}>
 Passando na rua
-
 </option>
 
-<option value="Outro">
-
+<option value="Outro"
+{{ old('origem')=='Outro' ? 'selected':'' }}>
 Outro
-
 </option>
 
 </select>
@@ -414,7 +416,7 @@ Outro
     </small>
 
 </div>
-
+<div class="planos-section">
 <div class="row g-3 mb-4">
 
 @foreach($planos as $plano)
@@ -467,8 +469,13 @@ Outro
 @endforeach
 
 </div>
-<input type="hidden" name="plano_id" id="plano_id">
-
+</div>
+<input
+type="hidden"
+name="plano_id"
+id="plano_id"
+value="{{ old('plano_id') }}"
+required>
 
 <hr>
 
@@ -504,6 +511,8 @@ class="form-check-input"
 type="checkbox"
 
 name="aceite"
+
+value="1"
 
 required
 
@@ -889,7 +898,45 @@ value;
 );
 
 </script>
+<script>
 
+document
+.getElementById('cadastroForm')
+.addEventListener(
+'submit',
+function(e){
+
+let plano =
+document.getElementById(
+'plano_id'
+).value;
+
+if(!plano){
+
+e.preventDefault();
+
+alert(
+'Selecione um plano antes de continuar'
+);
+
+document
+.querySelector(
+'.planos-section'
+)
+.scrollIntoView({
+behavior:'smooth',
+block:'center'
+});
+
+return false;
+
+}
+
+}
+
+);
+
+</script>
 </body>
 <script>
 
@@ -915,6 +962,35 @@ function selecionarPlano(el, planoId) {
 
     btn.innerHTML =
         'Confirmar solicitação';
+}
+
+</script>
+<script>
+
+window.onload = function(){
+
+let plano =
+document.getElementById(
+'plano_id'
+).value;
+
+if(plano){
+
+let card =
+document.querySelector(
+`[onclick*="${plano}"]`
+);
+
+if(card){
+
+card.classList.add(
+'selected'
+);
+
+}
+
+}
+
 }
 
 </script>
