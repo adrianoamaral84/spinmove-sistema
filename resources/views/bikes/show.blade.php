@@ -1,64 +1,191 @@
 @extends('adminlte::page')
 
 @section('title', 'Bike')
-
+@section('css')
+<link rel="stylesheet" href="{{ asset('spinmove/css/spinmove.css') }}">
+@stop
 @section('content')
 
-<div class="card">
+<div class="content-header section-block">
+    <h3 class="mb-0">Bike {{ $bike->modelo }}</h3>
+    <small class="text-muted">
+        Visão completa de performance e histórico
+    </small>
+</div>
 
-    <div class="card-header">
+{{-- =========================
+    KPIs PRINCIPAIS
+========================= --}}
+<div class="section-block">
+    <div class="row">
 
-        <h3>
+        {{-- RECEITA --}}
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
 
-            Bike {{ $bike->modelo }}
+                    <div class="dashboard-icon mx-auto mb-2 icon-green">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
 
-        </h3>
+                    <h3>R$ {{ number_format($totalReceita,2,',','.') }}</h3>
+
+                    <small class="dashboard-label">
+                        Receita Gerada
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-green"></div>
+            </div>
+        </div>
+
+        {{-- LOCAÇÕES --}}
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-blue">
+                        <i class="fas fa-sync"></i>
+                    </div>
+
+                    <h3>{{ $totalLocacoes }}</h3>
+
+                    <small class="dashboard-label">
+                        Total de Locações
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-blue"></div>
+            </div>
+        </div>
+
+        {{-- ÚLTIMA LOCAÇÃO --}}
+        <div class="col-md-3">
+    @if($ultimaLocacao)
+
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+
+                <div class="dashboard-icon mx-auto mb-2 icon-orange">
+                    <i class="fas fa-calendar"></i>
+                </div>
+
+                <h3>
+                    {{ \Carbon\Carbon::parse($ultimaLocacao->data_inicio)->format('d/m/Y') }}
+                </h3>
+
+                <small class="dashboard-label">
+                    Última Locação
+                </small>
+
+            </div>
+
+            <div class="dashboard-line line-orange"></div>
+        </div>
+
+    @else
+
+        {{-- CARD VAZIO PARA MANTER GRID --}}
+        <div class="card dashboard-card opacity-0">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <h3>—</h3>
+                <small class="dashboard-label">Última Locação</small>
+            </div>
+            <div class="dashboard-line line-orange"></div>
+        </div>
+
+    @endif
+</div>
+
+        {{-- RETORNO --}}
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-{{ $retorno >= 0 ? 'green' : 'red' }}">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                    <h3>
+                        R$ {{ number_format($retorno,2,',','.') }}
+                    </h3>
+
+                    <small class="dashboard-label">
+                        Retorno
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-{{ $retorno >= 0 ? 'green' : 'red' }}"></div>
+            </div>
+        </div>
 
     </div>
+</div>
 
-    <div class="card-body">
+{{-- =========================
+    INFO DA BIKE
+========================= --}}
+<div class="section-block">
 
-        <div class="row">
+    <div class="card">
 
-            <div class="col-md-3">
+        <div class="card-header">
+            Informações da Bike
+        </div>
 
-                <strong>Status:</strong>
+        <div class="card-body">
 
-                <br>
+            <div class="row">
 
-                {{ $bike->status }}
+                <div class="col-md-3">
+                    <div class="cliente-label">Status</div>
 
-            </div>
+                    @if($bike->status == 'disponivel')
+                        <span class="badge badge-success">Disponível</span>
+                    @elseif($bike->status == 'alugada')
+                        <span class="badge badge-primary">Alugada</span>
+                    @elseif($bike->status == 'manutencao')
+                        <span class="badge badge-warning">Manutenção</span>
+                    @elseif($bike->status == 'vendida')
+                        <span class="badge badge-danger">Vendida</span>
+                    @else
+                        <span class="badge badge-secondary">{{ $bike->status }}</span>
+                    @endif
+                </div>
 
-            <div class="col-md-3">
+                <div class="col-md-3">
+                    <div class="cliente-label">Valor Compra</div>
+                    <div class="cliente-value">
+                        R$ {{ number_format($bike->valor_compra,2,',','.') }}
+                    </div>
+                </div>
 
-                <strong>Valor compra:</strong>
+                <div class="col-md-3">
+                    <div class="cliente-label">Valor Venda</div>
+                    <div class="cliente-value">
+                        R$ {{ number_format($bike->valor_venda,2,',','.') }}
+                    </div>
+                </div>
 
-                <br>
+                <div class="col-md-3">
+                    <div class="cliente-label">Cliente Atual</div>
+                    <div class="cliente-value">
+                        {{ $clienteAtual->cliente->nome ?? 'Disponível' }}
 
-                R$
-                {{ number_format(
-                    $bike->valor_compra,
-                    2,
-                    ',',
-                    '.'
-                ) }}
-
-            </div>
-
-            <div class="col-md-3">
-
-                <strong>Valor venda:</strong>
-
-                <br>
-
-                R$
-                {{ number_format(
-                    $bike->valor_venda,
-                    2,
-                    ',',
-                    '.'
-                ) }}
+                        @if($clienteAtual)
+                            <br>
+                            <small class="text-muted">
+                                Há {{ $diasLocada }} dias
+                            </small>
+                        @endif
+                    </div>
+                </div>
 
             </div>
 
@@ -68,130 +195,139 @@
 
 </div>
 
+{{-- =========================
+    HISTÓRICO
+========================= --}}
+<div class="section-block">
 
-<div class="card mt-3">
+    <div class="card">
 
-    <div class="card-header">
-
-        <h3>
-
+        <div class="card-header">
             Histórico de Locações
+        </div>
 
-        </h3>
+        <div class="table-wrapper">
+
+            <table class="table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Plano</th>
+                        <th>Início</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($locacoes as $locacao)
+
+                        <tr>
+                            <td>{{ $locacao->cliente->nome ?? '-' }}</td>
+                            <td>{{ $locacao->plano->nome ?? '-' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($locacao->created_at)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($locacao->data_vencimento)->format('d/m/Y') }}</td>
+                            <td>
+
+                                @if($locacao->status == 'ativa')
+                                    <span class="badge badge-success">Ativa</span>
+                                @elseif($locacao->status == 'aguardando_retirada')
+                                    <span class="badge badge-warning">Aguardando Retirada</span>
+                                @else
+                                    <span class="badge badge-secondary">Finalizada</span>
+                                @endif
+
+                            </td>
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="5" class="text-muted text-center">
+                                Nenhuma locação registrada.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
-    <div class="card-body">
+</div>
 
-        <table class="table table-bordered">
+{{-- =========================
+    PERFORMANCE
+========================= --}}
+<div class="section-block">
 
-            <thead>
+    <div class="card">
 
-                <tr>
+        <div class="card-header">
+            Performance da Bike
+        </div>
 
-                    <th>Cliente</th>
+        <div class="card-body">
 
-                    <th>Início</th>
+            <div class="row">
 
-                    <th>Vencimento</th>
+                <div class="col-md-3">
+                    <div class="info-box bg-success">
+                        <span class="info-box-icon"><i class="fas fa-dollar-sign"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Receita</span>
+                            <span class="info-box-number">
+                                R$ {{ number_format($totalReceita,2,',','.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-                    <th>Status</th>
+                <div class="col-md-3">
+                    <div class="info-box bg-info">
+                        <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Investimento</span>
+                            <span class="info-box-number">
+                                R$ {{ number_format($bike->valor_compra,2,',','.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-                </tr>
+                <div class="col-md-3">
+                    <div class="info-box {{ $lucroLiquido >= 0 ? 'bg-success' : 'bg-danger' }}">
+                        <span class="info-box-icon"><i class="fas fa-chart-line"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Retorno Líquido</span>
+                            <span class="info-box-number">
+                                R$ {{ number_format($lucroLiquido,2,',','.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-            </thead>
+                <div class="col-md-3">
+                    <div class="info-box {{ $roi >= 100 ? 'bg-success' : ($roi >= 0 ? 'bg-warning' : 'bg-danger') }}">
+                        <span class="info-box-icon"><i class="fas fa-percentage"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">ROI</span>
+                            <span class="info-box-number">
+                                {{ number_format($roi,0,',','.') }}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-            <tbody>
+            </div>
 
-                @forelse($locacoes as $locacao)
-
-                <tr>
-
-                    <td>
-
-                        {{ $locacao->cliente->nome ?? '-' }}
-
-                    </td>
-
-                    <td>
-
-                        {{ date(
-                            'd/m/Y',
-                            strtotime(
-                                $locacao->created_at
-                            )
-                        ) }}
-
-                    </td>
-
-                    <td>
-
-                        {{ date(
-                            'd/m/Y',
-                            strtotime(
-                                $locacao->data_vencimento
-                            )
-                        ) }}
-
-                    </td>
-
-                    <td>
-
-                        @if(
-                            $locacao->status
-                            ==
-                            'ativa'
-                        )
-
-                        <span class="badge badge-success">
-
-                            Ativa
-
-                        </span>
-
-                        @elseif(
-                            $locacao->status
-                            ==
-                            'aguardando_retirada'
-                        )
-
-                        <span class="badge badge-warning">
-
-                            Aguardando Retirada
-
-                        </span>
-
-                        @else
-
-                        <span class="badge badge-secondary">
-
-                            Finalizada
-
-                        </span>
-
-                        @endif
-
-                    </td>
-
-                </tr>
-
-                @empty
-
-                <tr>
-
-                    <td colspan="4">
-
-                        Nenhuma locação.
-
-                    </td>
-
-                </tr>
-
-                @endforelse
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 

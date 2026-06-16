@@ -3,12 +3,40 @@
 @section('title', 'Nova Locação')
 
 @section('content_header')
-    <h1>Nova Locação</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h1 class="mb-1">
+            Nova Locação
+        </h1>
+
+        <small class="text-muted">
+            Cadastre uma nova locação de bike
+        </small>
+
+    </div>
+
+</div>
+
 @stop
 
 @section('content')
 
 <div class="card">
+
+    <div class="card-header spinmove-header">
+
+        <h5 class="mb-0">
+
+            <i class="fas fa-bicycle mr-2"></i>
+
+            Dados da Locação
+
+        </h5>
+
+    </div>
 
     <div class="card-body">
 
@@ -17,66 +45,75 @@
 
             @csrf
 
-            <div class="form-group">
+            <div class="row">
 
-                <label>Cliente</label>
+    <div class="col-md-6">
 
-                <select
-name="cliente_id"
-class="form-control select2"
-required
->
+        <div class="form-group">
 
-                    <option value="">
-                        Selecione
+            <label>Cliente</label>
+
+            <select
+                name="cliente_id"
+                class="form-control select2"
+                required>
+
+                <option value="">Selecione</option>
+
+                @foreach($clientes as $cliente)
+
+                    <option value="{{ $cliente->id }}">
+                        {{ $cliente->nome }}
                     </option>
 
-                    @foreach($clientes as $cliente)
+                @endforeach
 
-                        <option value="{{ $cliente->id }}">
-                            {{ $cliente->nome }}
-                        </option>
+            </select>
 
-                    @endforeach
+        </div>
 
-                </select>
+    </div>
 
-            </div>
+    <div class="col-md-6">
 
-            <div class="form-group">
+        <div class="form-group">
 
-                <label>Bike</label>
+            <label>Bike</label>
 
-                <select name="bike_id"
-                        class="form-control"
-                        required>
+            <select
+                name="bike_id"
+                class="form-control select2-bike"
+                required>
 
-                    <option value="">
-                        Selecione
+                <option value="">Selecione</option>
+
+                @foreach($bikes as $bike)
+
+                    <option value="{{ $bike->id }}">
+                        {{ $bike->codigo }} - {{ $bike->modelo }}
                     </option>
 
-                    @foreach($bikes as $bike)
+                @endforeach
 
-                        <option value="{{ $bike->id }}">
-                            {{ $bike->codigo }} - {{ $bike->modelo }}
-                        </option>
+            </select>
 
-                    @endforeach
+        </div>
 
-                </select>
+    </div>
 
-            </div>
+</div>
 
             <div class="form-group">
 
     <label>Plano</label>
 
-    <select name="plano_id"
-            class="form-control"
-            required>
+    <select
+        name="plano_id"
+        class="form-control"
+        required>
 
         <option value="">
-            Selecione
+            Selecione o plano
         </option>
 
         @foreach($planos as $plano)
@@ -84,8 +121,7 @@ required
             <option value="{{ $plano->id }}">
 
                 {{ $plano->nome }}
-
-                - R$ {{ number_format($plano->valor, 2, ',', '.') }}
+                - R$ {{ number_format($plano->valor,2,',','.') }}
 
             </option>
 
@@ -100,18 +136,34 @@ required
             
             <div class="form-group">
 
-                <label>Observações</label>
+    <label>Observações</label>
 
-                <textarea name="observacoes"
-                          class="form-control"></textarea>
+    <textarea
+        name="observacoes"
+        rows="4"
+        class="form-control"
+        placeholder="Informações adicionais da locação..."></textarea>
 
-            </div>
+</div>
 
-            <button class="btn btn-success">
+            <div class="d-flex justify-content">
 
-                Salvar Locação
+    <a href="{{ route('locacoes.index') }}"
+       class="btn btn-light mr-2">
 
-            </button>
+        Cancelar
+
+    </a>
+
+    <button class="btn btn-success">
+
+        <i class="fas fa-save mr-1"></i>
+
+        Salvar Locação
+
+    </button>
+
+</div>
 
         </form>
 
@@ -191,5 +243,19 @@ $(function(){
 });
 
 </script>
+<script>
+    $(function(){
 
+    $('.select2').select2({
+        placeholder:'Pesquisar cliente',
+        width:'100%'
+    });
+
+    $('.select2-bike').select2({
+        placeholder:'Pesquisar bike',
+        width:'100%'
+    });
+
+});
+</script>
 @stop

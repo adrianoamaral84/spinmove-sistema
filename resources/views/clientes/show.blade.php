@@ -2,31 +2,64 @@
 
 @section('title', 'Detalhes do Cliente')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('spinmove/css/spinmove.css') }}">
+@stop
+
 @section('content_header')
-    <h1>Detalhes do Cliente</h1>
+<div class="mb-4">
+    <h1 class="mb-1">Detalhes do Cliente</h1>
+
+    <small class="text-muted">
+        Informações completas do cliente
+    </small>
+</div>
 @stop
 
 @section('content')
-<div class="card">
+
+@php
+
+$enderecoCompleto = urlencode(
+    ($cliente->endereco ?? '') . ', ' .
+    ($cliente->numero ?? '') . ', ' .
+    ($cliente->bairro ?? '') . ', ' .
+    ($cliente->cidade ?? '') . ', ' .
+    ($cliente->estado ?? '')
+);
+
+$totalPago = $cliente->pagamentos->where('usado', false)->sum('valor');
+$valorPlano = $cliente->plano->valor ?? 0;
+$falta = $valorPlano - $totalPago;
+
+@endphp
+
+<div class="card mb-4">
 
     <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
 
-            <div>
+            <div class="d-flex align-items-center">
 
-                <h2 class="mb-1">
+                <div class="cliente-avatar mr-3" style="width:70px;height:70px;font-size:24px;">
+                    {{ strtoupper(substr($cliente->nome,0,1)) }}
+                </div>
 
-                    {{ $cliente->nome }}
+                <div>
 
-                </h2>
+                    <h2 class="mb-1 font-weight">
+                        {{ $cliente->nome }}
+                    </h2>
 
-                <p class="mb-0 text-muted">
+                    <div class="text-muted">
 
-                    Cliente desde
-                    {{ $cliente->created_at->format('d/m/Y') }}
+                        Cliente desde
+                        {{ $cliente->created_at->format('d/m/Y') }}
 
-                </p>
+                    </div>
+
+                </div>
 
             </div>
 
@@ -34,26 +67,20 @@
 
                 @if($cliente->status == 'ativo')
 
-                    <span class="badge badge-success p-2">
-
+                    <span class="badge badge-success px-3 py-2">
                         Cliente Ativo
-
                     </span>
 
                 @elseif($cliente->status == 'inativo')
 
-                    <span class="badge badge-secondary p-2">
-
+                    <span class="badge badge-secondary px-3 py-2">
                         Cliente Inativo
-
                     </span>
 
                 @else
 
-                    <span class="badge badge-danger p-2">
-
+                    <span class="badge badge-danger px-3 py-2">
                         Bloqueado
-
                     </span>
 
                 @endif
@@ -66,208 +93,195 @@
 
         <div class="row">
 
-            <div class="col-md-3 mb-3">
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Telefone</div>
 
-                <strong>Telefone</strong><br>
+                <div class="cliente-value">
 
-                {{ $cliente->telefone ?? '-' }}
+                    <a href="https://wa.me/55{{ preg_replace('/[^0-9]/', '', $cliente->telefone) }}"
+                       target="_blank">
+
+                        {{ $cliente->telefone ?? '-' }}
+
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Email</div>
+                <div class="cliente-value">{{ $cliente->email ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">CPF</div>
+                <div class="cliente-value">{{ $cliente->cpf_formatado }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">RG</div>
+                <div class="cliente-value">{{ $cliente->rg ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Profissão</div>
+                <div class="cliente-value">{{ $cliente->profissao ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Estado Civil</div>
+                <div class="cliente-value">{{ $cliente->estado_civil ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Nascimento</div>
+
+                <div class="cliente-value">
+
+                    {{ $cliente->data_nascimento
+                        ? \Carbon\Carbon::parse($cliente->data_nascimento)->format('d/m/Y')
+                        : '-' }}
+
+                </div>
 
             </div>
 
-            <div class="col-md-3 mb-3">
-
-                <strong>Email</strong><br>
-
-                {{ $cliente->email ?? '-' }}
-
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Altura</div>
+                <div class="cliente-value">{{ $cliente->altura ?? '-' }}</div>
             </div>
 
-            <div class="col-md-3 mb-3">
-
-                <strong>CPF</strong><br>
-
-                {{ $cliente->cpf ?? '-' }}
-
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Origem</div>
+                <div class="cliente-value">{{ $cliente->origem ?? '-' }}</div>
             </div>
 
-            <div class="col-md-3 mb-3">
-
-                <strong>RG</strong><br>
-
-                {{ $cliente->rg ?? '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Profissão</strong><br>
-
-                {{ $cliente->profissao ?? '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Estado Civil</strong><br>
-
-                {{ $cliente->estado_civil ?? '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Data Nascimento</strong><br>
-
-                {{ $cliente->data_nascimento 
-                    ? \Carbon\Carbon::parse($cliente->data_nascimento)->format('d/m/Y') 
-                    : '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Altura</strong><br>
-
-                {{ $cliente->altura ?? '-' }}
-
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Plano Atual</div>
+                <div class="cliente-value">
+                    {{ $cliente->plano->nome ?? '-' }}
+                </div>
             </div>
 
         </div>
 
         <hr>
 
-        <h5 class="mb-3">
-
+        <h5 class="cliente-section-title">
             Endereço
-
         </h5>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-4">
+                <div class="cliente-label">Rua</div>
+                <div class="cliente-value">{{ $cliente->endereco ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-2 mb-4">
+                <div class="cliente-label">Número</div>
+                <div class="cliente-value">{{ $cliente->numero ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Bairro</div>
+                <div class="cliente-value">{{ $cliente->bairro ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="cliente-label">Cidade</div>
+                <div class="cliente-value">{{ $cliente->cidade ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-2 mb-4">
+                <div class="cliente-label">Estado</div>
+                <div class="cliente-value">{{ $cliente->estado ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-2 mb-4">
+                <div class="cliente-label">CEP</div>
+                <div class="cliente-value">{{ $cliente->cep ?? '-' }}</div>
+            </div>
+
+        </div>
+
+                <hr>
 
         <div class="row">
 
             <div class="col-md-4 mb-3">
 
-                <strong>Rua</strong><br>
+                <div class="card dashboard-card">
 
-                {{ $cliente->endereco ?? '-' }}
+                    <div class="card-body text-center">
 
-            </div>
+                        <div class="dashboard-icon icon-blue mx-auto mb-3">
+                            <i class="fas fa-bicycle"></i>
+                        </div>
 
-            <div class="col-md-2 mb-3">
-
-                <strong>Número</strong><br>
-
-                {{ $cliente->numero ?? '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Bairro</strong><br>
-
-                {{ $cliente->bairro ?? '-' }}
-
-            </div>
-
-            <div class="col-md-3 mb-3">
-
-                <strong>Cidade</strong><br>
-
-                {{ $cliente->cidade ?? '-' }}
-
-            </div>
-
-        </div>
-
-        <hr>
-
-        <div class="row">
-
-            <div class="col-md-4">
-
-                <div class="info-box">
-
-                    <span class="info-box-icon bg-info">
-
-                        <i class="fas fa-bicycle"></i>
-
-                    </span>
-
-                    <div class="info-box-content">
-
-                        <span class="info-box-text">
-
-                            Total de Locações
-
-                        </span>
-
-                        <span class="info-box-number">
-
+                        <div class="dashboard-number">
                             {{ $cliente->locacoes->count() }}
+                        </div>
 
-                        </span>
+                        <div class="dashboard-label">
+                            Total de Locações
+                        </div>
 
                     </div>
+
+                    <div class="dashboard-line line-blue"></div>
 
                 </div>
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
 
-                <div class="info-box">
+                <div class="card dashboard-card">
 
-                    <span class="info-box-icon bg-success">
+                    <div class="card-body text-center">
 
-                        <i class="fas fa-dollar-sign"></i>
+                        <div class="dashboard-icon icon-green mx-auto mb-3">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
 
-                    </span>
+                        <div class="dashboard-number">
+                            R$ {{ number_format($cliente->locacoes->sum('valor_mensal'),2,',','.') }}
+                        </div>
 
-                    <div class="info-box-content">
-
-                        <span class="info-box-text">
-
+                        <div class="dashboard-label">
                             Total Gerado
-
-                        </span>
-
-                        <span class="info-box-number">
-
-                            R$
-                            {{ number_format($cliente->locacoes->sum('valor_mensal'), 2, ',', '.') }}
-
-                        </span>
+                        </div>
 
                     </div>
+
+                    <div class="dashboard-line line-green"></div>
 
                 </div>
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
 
-                <div class="info-box">
+                <div class="card dashboard-card">
 
-                    <span class="info-box-icon bg-warning">
+                    <div class="card-body text-center">
 
-                        <i class="fas fa-clock"></i>
+                        <div class="dashboard-icon icon-orange mx-auto mb-3">
+                            <i class="fas fa-clock"></i>
+                        </div>
 
-                    </span>
+                        <div class="dashboard-number">
+                            {{ $cliente->locacoes->where('status','ativa')->count() }}
+                        </div>
 
-                    <div class="info-box-content">
-
-                        <span class="info-box-text">
-
+                        <div class="dashboard-label">
                             Locações Ativas
-
-                        </span>
-
-                        <span class="info-box-number">
-
-                            {{ $cliente->locacoes->where('status', 'ativa')->count() }}
-
-                        </span>
+                        </div>
 
                     </div>
+
+                    <div class="dashboard-line line-orange"></div>
 
                 </div>
 
@@ -283,8 +297,7 @@
                target="_blank"
                class="btn btn-success mr-2 mb-2">
 
-                <i class="fab fa-whatsapp"></i>
-
+                <i class="fab fa-whatsapp mr-1"></i>
                 WhatsApp
 
             </a>
@@ -292,8 +305,7 @@
             <a href="{{ route('clientes.edit', $cliente) }}"
                class="btn btn-warning mr-2 mb-2">
 
-                <i class="fas fa-edit"></i>
-
+                <i class="fas fa-edit mr-1"></i>
                 Editar
 
             </a>
@@ -301,8 +313,7 @@
             <a href="{{ route('clientes.locacao.create',$cliente) }}?cliente={{ $cliente->uuid }}"
                class="btn btn-primary mr-2 mb-2">
 
-                <i class="fas fa-plus"></i>
-
+                <i class="fas fa-plus mr-1"></i>
                 Nova Locação
 
             </a>
@@ -313,310 +324,443 @@
 
 </div>
 
+<!-- ALERTAS -->
 
-@php
+<div class="card mb-4">
 
-$enderecoCompleto = urlencode(
-    $cliente->endereco . ', ' .
-    $cliente->bairro
-    
-);
+    <div class="card-header spinmove-header">
 
-@endphp
+        <h5 class="mb-0">
 
-<div class="card">
+            <i class="fas fa-bell mr-2"></i>
 
-    <div class="card-header">
+            Alertas do Cliente
 
-        <h3 class="card-title">
-
-            <i class="fas fa-map-marker-alt"></i>
-
-            Localização do Cliente
-
-        </h3>
+        </h5>
 
     </div>
 
     <div class="card-body">
 
-        <div class="mb-3">
+        @forelse($alertas as $alerta)
 
-            <a href="https://www.google.com/maps/search/?api=1&query={{ $enderecoCompleto }}"
-               target="_blank"
-               class="btn btn-danger">
+            @php
 
-                <i class="fas fa-map-marker-alt"></i>
+                $icone = match($alerta['tipo']) {
 
-                Abrir no Google Maps
+                    'danger' => 'fas fa-exclamation-circle',
+                    'warning' => 'fas fa-exclamation-triangle',
+                    'info' => 'fas fa-info-circle',
+                    default => 'fas fa-check-circle'
 
-            </a>
+                };
 
-        </div>
+            @endphp
+
+            <div class="d-flex align-items-center p-3 mb-3 border rounded bg-white">
+
+                <div class="mr-3">
+
+                    @if($alerta['tipo'] == 'danger')
+
+                        <i class="{{ $icone }} text-danger fa-lg"></i>
+
+                    @elseif($alerta['tipo'] == 'warning')
+
+                        <i class="{{ $icone }} text-warning fa-lg"></i>
+
+                    @elseif($alerta['tipo'] == 'info')
+
+                        <i class="{{ $icone }} text-info fa-lg"></i>
+
+                    @else
+
+                        <i class="{{ $icone }} text-success fa-lg"></i>
+
+                    @endif
+
+                </div>
+
+                <div>
+
+                    {{ $alerta['texto'] }}
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="text-center py-4">
+
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+
+                <h5>Tudo certo!</h5>
+
+                <p class="text-muted mb-0">
+
+                    Nenhum alerta para este cliente.
+
+                </p>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+</div>
+
+<!-- MAPA -->
+
+<div class="card mb-4">
+
+    <div class="card-header spinmove-header">
+
+        <h5 class="mb-0">
+
+            <i class="fas fa-map-marker-alt mr-2"></i>
+
+            Localização do Cliente
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <a href="https://www.google.com/maps/search/?api=1&query={{ $enderecoCompleto }}"
+           target="_blank"
+           class="btn btn-danger mb-3">
+
+            <i class="fas fa-map-marker-alt mr-1"></i>
+
+            Abrir no Google Maps
+
+        </a>
 
         <iframe
             width="100%"
-            height="350"
-            style="border:0; border-radius:10px;"
+            height="400"
+            style="border:0;border-radius:14px;"
             loading="lazy"
             allowfullscreen
             src="https://www.google.com/maps?q={{ $enderecoCompleto }}&output=embed">
-
         </iframe>
 
     </div>
 
 </div>
 
+<!-- LOCAÇÕES -->
 
+<div class="card mb-4">
 
+    <div class="card-header spinmove-header">
 
+        <h5 class="mb-0">
 
-<div class="card">
-
-    <div class="card-header">
-
-        <h3 class="card-title">
+            <i class="fas fa-bicycle mr-2"></i>
 
             Locações do Cliente
 
+        </h5>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Bike</th>
+                        <th>Plano</th>
+                        <th>Início</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach($cliente->locacoes as $locacao)
+
+                    <tr>
+
+                        <td>{{ $locacao->bike->modelo ?? '-' }}</td>
+
+                        <td>{{ $locacao->plano->nome ?? '-' }}</td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($locacao->data_inicio)->format('d/m/Y') }}
+                        </td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($locacao->data_vencimento)->format('d/m/Y') }}
+                        </td>
+
+                        <td>
+
+                            @if($locacao->status == 'ativa')
+
+                                <span class="badge badge-success">
+                                    Ativa
+                                </span>
+
+                            @elseif($locacao->status == 'atrasada')
+
+                                <span class="badge badge-danger">
+                                    Atrasada
+                                </span>
+
+                            @else
+
+                                <span class="badge badge-secondary">
+                                    Finalizada
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card mt-4">
+
+    <div class="card-header spinmove-header">
+
+        <h3 class="card-title">
+            <i class="fas fa-history mr-2"></i>
+            Histórico do Cliente
         </h3>
 
     </div>
 
     <div class="card-body">
 
-        <table class="table table-bordered">
+        @if($cliente->historicos->count())
 
-            <thead>
+            <div class="timeline">
 
-                <tr>
+                @foreach($cliente->historicos as $historico)
 
-                    <th>Bike</th>
-                    <th>Plano</th>
-                    <th>Início</th>
-                    <th>Vencimento</th>
-                    <th>Status</th>
+                    <div class="timeline-item">
 
-                </tr>
+                        <div class="timeline-icon">
 
-            </thead>
+                            @include(
+                                'clientes.partials.historico-icon',
+                                ['evento' => $historico->evento]
+                            )
 
-            <tbody>
+                        </div>
 
-                @foreach($cliente->locacoes as $locacao)
+                        <div class="timeline-content">
 
-                <tr>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
 
-                    <td>
+                                <strong>
+                                    {{ $historico->evento }}
+                                </strong>
 
-                        {{ $locacao->bike->modelo ?? '-' }}
+                                <small class="text-muted">
+                                    {{ $historico->created_at->format('d/m/Y H:i') }}
+                                </small>
 
-                    </td>
+                            </div>
 
-                    <td>
+                            @if($historico->descricao)
 
-                        {{ $locacao->plano->nome ?? '-' }}
+                                <div>
+                                    {{ $historico->descricao }}
+                                </div>
 
-                    </td>
+                            @endif
 
-                    <td>
+                        </div>
 
-                        {{ \Carbon\Carbon::parse($locacao->data_inicio)->format('d/m/Y') }}
-
-                    </td>
-
-                    <td>
-
-                        {{ \Carbon\Carbon::parse($locacao->data_vencimento)->format('d/m/Y') }}
-
-                    </td>
-
-                    <td>
-
-                        @if($locacao->status == 'ativa')
-
-                            <span class="badge badge-success">
-                                Ativa
-                            </span>
-
-                        @elseif($locacao->status == 'atrasada')
-
-                            <span class="badge badge-danger">
-                                Atrasada
-                            </span>
-
-                        @else
-
-                            <span class="badge badge-secondary">
-                                Finalizada
-                            </span>
-
-                        @endif
-
-                    </td>
-
-                </tr>
+                    </div>
 
                 @endforeach
 
-            </tbody>
+            </div>
 
-        </table>
+        @else
 
-    </div>
+            <div class="text-center py-5">
 
-</div>
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
 
+                <h5>Nenhum histórico registrado</h5>
 
-
-
-
-
-
-@php
-$totalPago = $cliente->pagamentos->where('usado', false)->sum('valor');
-$valorPlano = $cliente->plano->valor ?? 0;
-$falta = $valorPlano - $totalPago;
-@endphp
-
-<div class="alert alert-info">
-    💰 Pago: R$ {{ $totalPago }} <br>
-    📦 Plano: R$ {{ $valorPlano }} <br>
-    ⚠️ Falta: R$ {{ max($falta, 0) }}
-</div>
-<div class="card mt-4">
-    <div class="card-header">
-        <strong>Registrar Pagamento</strong>
-    </div>
-
-    <div class="card-body">
-        <form method="POST" action="{{ route('pagamentos.store') }}">
-            @csrf
-
-            <input type="hidden" name="cliente_id" value="{{ $cliente->id }}">
-
-            <div class="row">
-
-               <div class="col-md-3">
-    <label>Valor</label>
-    <input type="number" step="0.01" name="valor" class="form-control" required>
-</div>
-
-<div class="col-md-3">
-    <label>Data do Pagamento</label>
-    <input type="date" name="data_pagamento" class="form-control">
-</div>
-
-<div class="col-md-3">
-    <label>Forma</label>
-    <select name="forma_pagamento" class="form-control">
-        <option>Pix</option>
-        <option>Cartão</option>
-        <option>Dinheiro</option>
-    </select>
-</div>
-
-                <div class="col-md-3">
-                    <label>Observação</label>
-                    <input name="observacao" class="form-control">
-                </div>
+                <p class="text-muted mb-0">
+                    Ainda não existem movimentações cadastradas para este cliente.
+                </p>
 
             </div>
 
-            <button class="btn btn-success mt-3">
-                Registrar Pagamento
-            </button>
+        @endif
 
-        </form>
     </div>
+
 </div>
 
-<div class="card mt-4">
-    <div class="card-header">
-        <strong>Histórico de Pagamentos</strong>
-    </div>
+<style>
 
-    <div class="card-body">
+.cliente-resumo-card{
+    border:0;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    transition:.2s;
+}
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Valor</th>
-                    <th>Forma</th>
-                    <th>Obs</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
+.cliente-resumo-card:hover{
+    transform:translateY(-3px);
+}
 
-            <tbody>
-                @foreach($cliente->pagamentos as $pagamento)
-                <tr>
-                    <td>{{ $pagamento->data_pagamento }}</td>
-                    <td>R$ {{ $pagamento->valor }}</td>
-                    <td>{{ $pagamento->forma_pagamento }}</td>
-                    <td>{{ $pagamento->observacao }}</td>
-                    <td>
 
-    <!-- EDITAR -->
-    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#edit{{ $pagamento->id }}">
-        Editar
-    </button>
+.cliente-section-title{
+    font-size:18px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:20px;
+}
 
-    <!-- EXCLUIR -->
-    <form action="{{ route('pagamentos.destroy', $pagamento->id) }}" method="POST" style="display:inline;">
-        @csrf
-        @method('DELETE')
-        <button class="btn btn-danger btn-sm">Excluir</button>
-    </form>
+.dashboard-card{
+    border:none;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
 
-</td>
-                </tr>
+.dashboard-icon{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#f3f4f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+}
 
-                <div class="modal fade" id="edit{{ $pagamento->id }}">
-    <div class="modal-dialog">
-        <form method="POST" action="{{ route('pagamentos.update', $pagamento->id) }}">
-            @csrf
-            @method('PUT')
+.dashboard-number{
+    font-size:28px;
+    font-weight:700;
+    line-height:1.2;
+}
 
-            <div class="modal-content">
+.dashboard-label{
+    color:#6b7280;
+    font-size:14px;
+}
 
-                <div class="modal-header">
-                    <h5>Editar Pagamento</h5>
-                </div>
+.dashboard-line{
+    height:4px;
+}
 
-                <div class="modal-body">
 
-                    <label>Valor</label>
-                    <input name="valor" value="{{ $pagamento->valor }}" class="form-control">
 
-                    <label>Data</label>
-                    <input type="date" name="data_pagamento"
-                        value="{{ $pagamento->data_pagamento }}"
-                        class="form-control">
+.spinmove-header{
+    background:#f8fafc;
+    border-bottom:1px solid #e5e7eb;
+    font-weight:600;
+}
 
-                    <label>Forma</label>
-                    <input name="forma_pagamento" value="{{ $pagamento->forma_pagamento }}" class="form-control">
+.timeline{
+    position:relative;
+    padding-left:35px;
+}
 
-                    <label>Observação</label>
-                    <input name="observacao" value="{{ $pagamento->observacao }}" class="form-control">
+.timeline:before{
+    content:'';
+    position:absolute;
+    left:11px;
+    top:0;
+    width:2px;
+    height:100%;
+    background:#e5e7eb;
+}
 
-                </div>
+.timeline-item{
+    position:relative;
+    margin-bottom:25px;
+}
 
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Salvar</button>
-                </div>
+.timeline-icon{
+    position:absolute;
+    left:-30px;
+    top:3px;
+    width:24px;
+    height:24px;
+    background:#fff;
+    border-radius:50%;
+    text-align:center;
+    line-height:24px;
+    box-shadow:0 0 0 4px #fff;
+}
 
-            </div>
-        </form>
-    </div>
-</div>
-                @endforeach
-            </tbody>
+.timeline-content{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:15px;
+    border:1px solid #e5e7eb;
+}
 
-        </table>
+.badge{
+    font-size:12px;
+    padding:8px 12px;
+}
 
-    </div>
-</div>
+.table thead th{
+    border-top:none;
+    background:#f8fafc;
+    font-weight:600;
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+
+iframe{
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+}
+
+@media (max-width:768px){
+
+    .dashboard-number{
+        font-size:22px;
+    }
+
+    .cliente-value{
+        margin-bottom:15px;
+    }
+
+}
+
+</style>
+
 @stop

@@ -41,5 +41,10 @@ public function locacoes()
     return $this->hasMany(Locacao::class);
 }
 
-
+public function historicos()
+{
+    return $this->hasMany(
+        BikeHistorico::class
+    )->latest();
+}
 }

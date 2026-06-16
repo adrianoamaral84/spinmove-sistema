@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Traits\HasUuid;
+use App\Models\ClienteHistorico;
 
 
 class Cliente extends Model
@@ -34,11 +35,19 @@ class Cliente extends Model
     'observacoes',
     'data_nascimento',
     'data_inicio_locacao',
+    'numero',
+    'cidade',
+    'cep',
+    'aceite_contrato',
+    'aceite_detalhes'
+
+    
 ];
 protected $casts = [
     'data_vencimento' => 'date',
     'data_nascimento' => 'date',
     'data_inicio_locacao' => 'date',
+     'aceite_detalhes' => 'array',
 ];
 
 
@@ -117,7 +126,26 @@ public function getTelefoneFormatadoAttribute()
         $this->telefone
     );
 }
+public function getCpfFormatadoAttribute()
+{
+    $cpf = preg_replace('/\D/', '', $this->cpf);
 
+    if (strlen($cpf) != 11) {
+        return $this->cpf;
+    }
+
+    return preg_replace(
+        "/(\d{3})(\d{3})(\d{3})(\d{2})/",
+        "$1.$2.$3-$4",
+        $cpf
+    );
+}
+public function historicos()
+{
+    return $this->hasMany(
+        ClienteHistorico::class
+    )->latest();
+}
 
 
 

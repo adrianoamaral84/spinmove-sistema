@@ -27,7 +27,8 @@ return new class extends Migration
             'alugada',
             'manutencao',
             'reservada',
-            'inativa'
+            'inativa',
+            'vendida'
 
         ])->default('disponivel');
 

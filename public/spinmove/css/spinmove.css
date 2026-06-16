@@ -1,0 +1,429 @@
+
+/* =========================
+   SPINMOVE SAAS THEME (CLEAN)
+========================= */
+
+:root{
+    --sm-primary: #ff6a00;
+    --sm-dark: #1f1f1f;
+    --sm-bg: #f5f7fb;
+    --sm-card: #ffffff;
+    --sm-text: #111827;
+    --sm-muted: #6b7280;
+    --sm-border: #e5e7eb;
+}
+
+/* =========================
+   BASE
+========================= */
+
+body{
+    background: var(--sm-bg) !important;
+    color: var(--sm-text);
+}
+
+/* =========================
+   SIDEBAR (ADMINLTE)
+========================= */
+
+.main-sidebar{
+    background: var(--sm-dark) !important;
+    border-right: 1px solid rgba(255,255,255,.05);
+}
+
+.brand-link{
+    background: var(--sm-dark) !important;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.brand-text{
+    color:#fff !important;
+    font-weight:700 !important;
+    letter-spacing:.3px;
+}
+
+.nav-sidebar{
+    margin-top:15px;
+}
+
+.nav-sidebar .nav-link{
+    color:#d1d5db !important;
+    border-radius:12px;
+    margin:4px 10px;
+    padding:10px 12px;
+    transition:.2s;
+}
+
+.nav-sidebar .nav-link:hover{
+    background: rgba(255,255,255,.05) !important;
+}
+
+.nav-sidebar .nav-link.active{
+    background: rgba(255,106,0,.15) !important;
+    border-left:4px solid var(--sm-primary);
+    color:#fff !important;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.main-header{
+    background: var(--sm-dark) !important;
+    border-bottom:none !important;
+}
+
+.main-header .nav-link{
+    color:#fff !important;
+}
+
+/* =========================
+   CONTENT AREA
+========================= */
+
+.content-wrapper{
+    background: var(--sm-bg) !important;
+}
+
+.content-header{
+    padding-bottom:0;
+}
+
+/* =========================
+   CARDS (PADRÃO ÚNICO)
+========================= */
+
+.card{
+    background: var(--sm-card);
+    border: 1px solid var(--sm-border) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,.04) !important;
+    transition: .2s;
+}
+
+.card:hover{
+    transform: translateY(-2px);
+}
+
+.card-header{
+    background:#fff !important;
+    border-bottom:1px solid #f1f5f9 !important;
+    font-weight:600;
+}
+
+.card-title{
+    font-size:18px;
+    font-weight:600;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard-card{
+    background:#fff;
+    border-radius:16px;
+    transition:.2s;
+}
+
+.dashboard-card:hover{
+    transform: translateY(-3px);
+}
+
+.dashboard-icon{
+    width:54px;
+    height:54px;
+    border-radius:14px;
+    background:#f8fafc;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.dashboard-icon i{
+    font-size:24px;
+    color:#64748b;
+}
+
+.dashboard-number{
+    font-size:32px;
+    font-weight:700;
+    color:var(--sm-text);
+}
+
+.dashboard-label{
+    color:var(--sm-muted);
+    font-size:14px;
+}
+
+/* ICON COLORS */
+
+.icon-blue i{ color:#3b82f6; }
+.icon-green i{ color:#22c55e; }
+.icon-orange i{ color:#f97316; }
+.icon-red i{ color:#ef4444; }
+.icon-gray i{ color:#64748b; }
+
+/* =========================
+   TABLES
+========================= */
+
+.table{
+    background:#fff;
+    margin-bottom:0;
+}
+
+.table thead th{
+    background:#f8fafc;
+    color:#64748b;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    border-bottom:1px solid var(--sm-border);
+}
+
+.table tbody td{
+    vertical-align:middle;
+    padding:14px;
+}
+
+.table tbody tr:hover{
+    background:#fafafa;
+}
+
+.table-responsive{
+    border-radius:12px;
+    overflow:hidden;
+}
+
+/* =========================
+   FORMS & BUTTONS
+========================= */
+
+.form-control{
+    border-radius:10px;
+    height:42px;
+}
+
+label{
+    font-weight:600;
+    color:#475569;
+    margin-bottom:6px;
+}
+
+.btn{
+    border-radius:10px;
+}
+
+.btn-sm{
+    border-radius:8px;
+    padding:5px 10px;
+}
+.section-block{
+    margin-bottom: 24px;
+}
+
+.actions-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+}
+
+.actions-group .btn{
+    transition:.15s;
+}
+
+.actions-group .btn:hover{
+    transform: translateY(-1px);
+}
+/* =========================
+   CLIENTE COMPONENTS
+========================= */
+
+.cliente-avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:var(--sm-primary);
+    color:#fff;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.cliente-label{
+    font-size:12px;
+    font-weight:600;
+    text-transform:uppercase;
+    color:#9ca3af;
+}
+
+.cliente-value{
+    font-size:16px;
+    font-weight:500;
+    color:var(--sm-text);
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.text-orange{
+    color:var(--sm-primary) !important;
+}
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#d1d5db;
+    border-radius:20px;
+}
+
+.cliente-value a{
+    color: var(--sm-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cliente-value a i{
+    opacity: 0;
+    transform: translateX(-3px);
+    transition: .2s;
+}
+
+.cliente-value a:hover{
+    color: var(--sm-primary);
+}
+
+.cliente-value a:hover i{
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* ===================================
+   CARD EVENTOS DA LOCAÇÃO
+=================================== */
+
+.card {
+    border-radius: 16px;
+}
+
+.event-header-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4f46e5;
+    font-size: 24px;
+    margin-right: 14px;
+}
+
+.evento-item {
+    position: relative;
+    display: flex;
+    gap: 18px;
+}
+
+.evento-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 46px;
+    bottom: -12px;
+    width: 3px;
+    background: #edf1f7;
+}
+
+.evento-icon {
+    position: relative;
+    z-index: 2;
+}
+
+.evento-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.evento-circle.pagamento {
+    background: #16a34a;
+}
+
+.evento-circle.renovacao {
+    background: #4f46e5;
+}
+
+.evento-circle.locacao {
+    background: #7c3aed;
+}
+
+.evento-content {
+    flex: 1;
+    padding-bottom: 24px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.evento-item:last-child .evento-content {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.evento-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.evento-titulo {
+    font-size: 1.00rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.evento-descricao {
+    color: #64748b;
+    font-size: 0.90rem;
+}
+
+.evento-data {
+    color: #64748b;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+
+    .evento-topo {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .evento-data {
+        white-space: normal;
+    }
+
+
+    
+}

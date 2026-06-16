@@ -1,0 +1,42 @@
+:root {
+    --spinmove-primary: #FF6A00;
+    --spinmove-dark: #1F1F1F;
+    --spinmove-light: #F7F7F7;
+}
+
+/* NAVBAR */
+.main-header {
+    background-color: var(--spinmove-dark) !important;
+}
+
+/* SIDEBAR */
+.main-sidebar {
+    background-color: var(--spinmove-dark) !important;
+}
+
+/* LOGO AREA */
+.brand-link {
+    background-color: var(--spinmove-dark) !important;
+}
+
+/* MENU ATIVO */
+.nav-sidebar .nav-link.active {
+    background-color: var(--spinmove-primary) !important;
+    border-radius: 8px;
+}
+
+/* BOTÕES */
+.btn-primary {
+    background-color: var(--spinmove-primary) !important;
+    border-color: var(--spinmove-primary) !important;
+}
+
+/* CARDS HOVER (efeito SaaS) */
+.card {
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}

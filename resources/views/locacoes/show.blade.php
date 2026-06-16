@@ -1,313 +1,358 @@
 @php
     use App\Models\Pagamento;
 @endphp
+
 @extends('adminlte::page')
 
 @section('title', 'Detalhes da Locação')
-
+@section('css')
+<link rel="stylesheet" href="{{ asset('spinmove/css/spinmove.css') }}">
+@stop
 @section('content_header')
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">Detalhes da Locação</h1>
+        <small class="text-muted">Informações completas da locação</small>
+    </div>
 
-<div class="d-flex justify-content-between">
-
-    <h1>
-
-        Detalhes da Locação
-
-    </h1>
-
-    <a href="{{ route('locacoes.index') }}"
-       class="btn btn-secondary">
-
-        <i class="fas fa-arrow-left"></i>
-
-        Voltar
-
+    <a href="{{ route('locacoes.index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
     </a>
-
 </div>
-
 @stop
 
 @section('content')
 
-<div class="row">
+{{-- =========================
+    KPIS (PADRÃO CLIENTES)
+========================= --}}
+<div class="row mb-4">
 
-    <div class="col-md-8">
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <h3 class="card-title">
-
-                    Informações da Locação
-
-                </h3>
-
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-blue">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h5>{{ $locacao->cliente->nome }}</h5>
+                <small class="text-muted">Cliente</small>
             </div>
+        </div>
+    </div>
 
-            <div class="card-body">
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-orange">
+                    <i class="fas fa-bicycle"></i>
+                </div>
+                <h3>{{ $locacao->bike->modelo }}</h3>
+                <small class="text-muted">Bike</small>
+            </div>
+        </div>
+    </div>
 
-                <div class="row">
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-green">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>R$ {{ number_format($locacao->valor_mensal,2,',','.') }}</h3>
+                <small class="text-muted">Valor Mensal</small>
+            </div>
+        </div>
+    </div>
 
-                    <div class="col-md-6">
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
 
-                        <strong>Cliente</strong><br>
-
-                        <a href="{{ route('clientes.show', $locacao->cliente->uuid) }}">
-
-    {{ $locacao->cliente->nome }}
-
-</a>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <strong>Telefone</strong><br>
-
-                        {{ $locacao->cliente->telefone }}
-
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-
-                        <strong>Bike</strong><br>
-
-                        <a href="{{ route('bikes.show', $locacao->bike->id) }}">
-
-    {{ $locacao->bike->modelo }}
-
-</a>
-
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-
-                        <strong>Plano</strong><br>
-
-                        {{ $locacao->plano->nome }}
-
-                    </div>
-
-                    <div class="col-md-4 mt-3">
-
-                        <strong>Valor</strong><br>
-
-                        R$
-                        {{ number_format($locacao->valor_mensal, 2, ',', '.') }}
-
-                    </div>
-
-                    <div class="col-md-4 mt-3">
-
-                        <strong>Início</strong><br>
-
-
-                            @if($locacao->data_inicio)
-
-{{ date(
-'d/m/Y',
-strtotime(
-$locacao->data_inicio
-)
-) }}
-
-@else
-
--
-
-@endif
-                        
-
-                    </div>
-
-                    <div class="col-md-4 mt-3">
-
-                        <strong>Vencimento</strong><br>
-@if($locacao->data_vencimento)
-
-{{ date(
-'d/m/Y',
-strtotime(
-$locacao->data_vencimento
-)
-) }}
-
-@else
-
--
-
-@endif
-              
-                    </div>
-
+                <div class="dashboard-icon mx-auto mb-2 icon-red">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
 
-                <hr>
+                @php
+                    $dias = now()->startOfDay()->diffInDays(
+                        \Carbon\Carbon::parse($locacao->data_vencimento)->startOfDay(),
+                        false
+                    );
+                @endphp
 
-                <div>
+                <h3>
+                    @if($dias < 0)
+                        {{ abs($dias) }} dias
+                    @else
+                        {{ $dias }} dias
+                    @endif
+                </h3>
+
+                <small class="text-muted">
+                    {{ $dias < 0 ? 'Atrasado' : 'Restantes' }}
+                </small>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{{-- =========================
+    INFO + STATUS
+========================= --}}
+<div class="row">
+
+    {{-- COLUNA ESQUERDA --}}
+    <div class="col-md-8">
+
+        <div class="card mb-4">
+
+    <div class="card-body">
+
+        <div class="section-block">
+            <h5>Informações da Locação</h5>
+
+            <small class="text-muted">
+                Dados gerais do contrato
+            </small>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Cliente</div>
+                <div class="cliente-value">
+                    <div class="cliente-value">
+    <a href="{{ route('clientes.show', $locacao->cliente->uuid) }}">
+    {{ $locacao->cliente->nome }}
+    <i class="fas fa-arrow-right fa-xs"></i>
+</a>
+</div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Telefone</div>
+                <div class="cliente-value">
+                    {{ $locacao->cliente->telefone }}
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Status</div>
+                <div class="cliente-value">
 
                     @if($locacao->status == 'ativa')
-
-                        <span class="badge badge-success">
-
-                            Ativa
-
-                        </span>
-
+                        <span class="badge badge-success">Ativa</span>
                     @elseif($locacao->status == 'atrasada')
-
-                        <span class="badge badge-danger">
-
-                            Atrasada
-
-                        </span>
-
-                    @elseif($locacao->status == 'aguardando_entrega')
-
+                        <span class="badge badge-danger">Atrasada</span>
+                    @else
                         <span class="badge badge-secondary">
-
-                            Agurdando Entrega
-
+                            {{ ucfirst($locacao->status) }}
                         </span>
+                    @endif
 
-                    @elseif($locacao->status == 'aguardando_retirada')
+                </div>
+            </div>
 
-                        <span class="badge badge-danger">
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Bike</div>
+                <div class="cliente-value">
+                    <div class="cliente-value">
+    <a href="{{ route('bikes.show', $locacao->bike->id) }}">
+    {{ $locacao->bike->modelo }}
+    <i class="fas fa-arrow-right fa-xs"></i>
+</a>
+</div>
+                </div>
+            </div>
 
-                            Agurdando Retirada
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Plano</div>
+                <div class="cliente-value">
+                    {{ $locacao->plano->nome }}
+                </div>
+            </div>
 
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Valor Mensal</div>
+                <div class="cliente-value">
+                    R$ {{ number_format($locacao->valor_mensal,2,',','.') }}
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Início</div>
+                <div class="cliente-value">
+                    {{ \Carbon\Carbon::parse($locacao->data_inicio)->format('d/m/Y') }}
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Vencimento</div>
+                <div class="cliente-value">
+                    {{ \Carbon\Carbon::parse($locacao->data_vencimento)->format('d/m/Y') }}
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="cliente-label">Dias Restantes</div>
+
+                <div class="cliente-value">
+
+                    @php
+                        $dias = now()->startOfDay()->diffInDays(
+                            \Carbon\Carbon::parse($locacao->data_vencimento)->startOfDay(),
+                            false
+                        );
+                    @endphp
+
+                    @if($dias < 0)
+
+                        <span class="text-danger">
+                            {{ abs($dias) }} dias atrasado
                         </span>
 
                     @else
 
-                        <span class="badge badge-secondary">
-
-                            Finalizada
-
+                        <span class="text-success">
+                            {{ $dias }} dias
                         </span>
 
                     @endif
 
                 </div>
-
             </div>
 
         </div>
 
-
-
-        <div class="card mt-4">
-
-    <div class="card-header">
-
-        <h3 class="card-title">
-
-            Histórico Financeiro
-
-        </h3>
-
     </div>
 
-    <div class="card-body">
+</div>
+        
 
-        @if($locacao->pagamentos->count())
+        {{-- =========================
+            HISTÓRICO FINANCEIRO
+        ========================== --}}
+     
+        <div class="card mb-4">
 
-        <table class="table table-bordered">
+            <div class="card-body p-0">
+
+                <div class="p-3">
+                    <h5>Histórico Financeiro</h5>
+                </div>
+
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Forma</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach($locacao->pagamentos as $pagamento)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($pagamento->data_pagamento)->format('d/m/Y') }}</td>
+                            <td>R$ {{ number_format($pagamento->valor,2,',','.') }}</td>
+                            <td>{{ ucfirst($pagamento->forma_pagamento) }}</td>
+                            <td>
+                        @if($pagamento->status == 'pago')
+
+    <span class="badge badge-success">
+        Pago
+    </span>
+
+@elseif($pagamento->status == 'pendente')
+
+    <span class="badge badge-warning">
+        Pendente
+    </span>
+
+@else
+
+    <span class="badge badge-danger">
+        Cancelado
+    </span>
+
+@endif 
+                        </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+
+        {{-- =========================
+    HISTÓRICO DE RENOVAÇÕES
+========================= --}}
+<div class="card mb-4">
+
+    <div class="card-body p-0">
+
+        <div class="p-3">
+            <h5>Histórico de Renovações</h5>
+            <small class="text-muted">
+                Todas as renovações realizadas nesta locação
+            </small>
+        </div>
+
+        <table class="table table-hover mb-0">
 
             <thead>
-
                 <tr>
-
-                    <th>Data</th>
+                    <th>Data Anterior</th>
+                    <th>Novo Vencimento</th>
                     <th>Valor</th>
-                    <th>Forma</th>
-                    <th>Parcelas</th>
-                    <th>Status</th>
-
+                    <th>Registrado em</th>
                 </tr>
-
             </thead>
 
             <tbody>
 
-                @foreach($locacao->pagamentos as $pagamento)
+                @forelse($locacao->renovacoes as $renovacao)
 
                 <tr>
 
                     <td>
-
-                        {{ \Carbon\Carbon::parse($pagamento->data_pagamento)->format('d/m/Y') }}
-
+                        {{ \Carbon\Carbon::parse($renovacao->data_anterior)->format('d/m/Y') }}
                     </td>
 
                     <td>
-
-                        R$
-                        {{ number_format($pagamento->valor, 2, ',', '.') }}
-
+                        {{ \Carbon\Carbon::parse($renovacao->nova_data)->format('d/m/Y') }}
                     </td>
 
                     <td>
-
-                        {{ ucfirst($pagamento->forma_pagamento) }}
-
+                        R$ {{ number_format($renovacao->valor, 2, ',', '.') }}
                     </td>
 
                     <td>
-
-                        {{ $pagamento->parcelas }}x
-
-                    </td>
-
-                    <td>
-
-                        @if($pagamento->status == 'pago')
-
-                            <span class="badge badge-success">
-
-                                Pago
-
-                            </span>
-
-                        @elseif($pagamento->status == 'pendente')
-
-                            <span class="badge badge-warning">
-
-                                Pendente
-
-                            </span>
-
-                        @else
-
-                            <span class="badge badge-danger">
-
-                                Cancelado
-
-                            </span>
-
-                        @endif
-
+                        {{ $renovacao->created_at->format('d/m/Y H:i') }}
                     </td>
 
                 </tr>
 
-                @endforeach
+                @empty
+
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        Nenhuma renovação registrada
+                    </td>
+                </tr>
+
+                @endforelse
 
             </tbody>
 
         </table>
-
-        @else
-
-            <div class="alert alert-warning">
-
-                Nenhum pagamento registrado.
-
-            </div>
-
-        @endif
 
     </div>
 
@@ -315,85 +360,25 @@ $locacao->data_vencimento
 
 
 
-        <div class="card">
+<div class="card shadow-sm border-0 mb-4">
 
-            <div class="card-header">
+    <div class="card-header bg-white border-0 pt-4 pb-2">
 
-                <h3 class="card-title">
+        <div class="d-flex align-items-center">
 
-                    Histórico de Renovações
-
-                </h3>
-
+            <div class="event-header-icon">
+                <i class="far fa-calendar-alt"></i>
             </div>
 
-            <div class="card-body">
+            <div>
 
-                <table class="table table-bordered">
+                <h4 class="mb-1 font-weight-bold">
+                    Eventos da Locação
+                </h4>
 
-                    <thead>
-
-                        <tr>
-
-                            <th>Data Anterior</th>
-                            <th>Nova Data</th>
-                            <th>Valor</th>
-                            <th>Data</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @forelse($locacao->renovacoes as $renovacao)
-
-                        <tr>
-
-                            <td>
-
-                                {{ \Carbon\Carbon::parse($renovacao->data_anterior)->format('d/m/Y') }}
-
-                            </td>
-
-                            <td>
-
-                                {{ \Carbon\Carbon::parse($renovacao->nova_data)->format('d/m/Y') }}
-
-                            </td>
-
-                            <td>
-
-                                R$
-                                {{ number_format($renovacao->valor, 2, ',', '.') }}
-
-                            </td>
-
-                            <td>
-
-                                {{ $renovacao->created_at->format('d/m/Y H:i') }}
-
-                            </td>
-
-                        </tr>
-
-                        @empty
-
-                        <tr>
-
-                            <td colspan="4">
-
-                                Nenhuma renovação.
-
-                            </td>
-
-                        </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
+                <small class="text-muted">
+                    Histórico completo desta locação
+                </small>
 
             </div>
 
@@ -401,74 +386,112 @@ $locacao->data_vencimento
 
     </div>
 
-    <div class="col-md-4">
+    <div class="card-body pt-3">
 
-        <div class="card">
+        @forelse($eventos as $evento)
 
-            <div class="card-header">
+            <div class="evento-item">
 
-                <h3 class="card-title">
+                <div class="evento-icon">
 
-                    Ações
+                    @if(str_contains(strtolower($evento['titulo']), 'pagamento'))
 
-                </h3>
+                        <div class="evento-circle pagamento">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+
+                    @elseif(str_contains(strtolower($evento['titulo']), 'renov'))
+
+                        <div class="evento-circle renovacao">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+
+                    @else
+
+                        <div class="evento-circle locacao">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+
+                    @endif
+
+                </div>
+
+                <div class="evento-content">
+
+                    <div class="evento-topo">
+
+                        <div>
+
+                            <div class="evento-titulo">
+                                {{ $evento['titulo'] }}
+                            </div>
+
+                            <div class="evento-descricao">
+                                {{ $evento['descricao'] }}
+                            </div>
+
+                        </div>
+
+                        <div class="evento-data">
+                            {{ $evento['data'] }}
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
+        @empty
+
+            <div class="text-center text-muted py-5">
+                Nenhum evento registrado.
+            </div>
+
+        @endforelse
+
+    </div>
+
+</div>
+
+
+    </div>
+
+    {{-- =========================
+        AÇÕES (PADRÃO CLIENTES LATERAL)
+    ========================== --}}
+    <div class="col-md-4">
+
+        <div class="card dashboard-card">
             <div class="card-body">
 
-                <a href="https://wa.me/55{{ preg_replace('/[^0-9]/', '', $locacao->cliente->telefone) }}"
-                   target="_blank"
-                   class="btn btn-success btn-block mb-2">
+                <h5 class="mb-3">Ações</h5>
 
-                    <i class="fab fa-whatsapp"></i>
+                <div class="actions-group">
 
-                    WhatsApp
+                    <a href="https://wa.me/55{{ preg_replace('/[^0-9]/', '', $locacao->cliente->telefone) }}"
+                       class="btn btn-success btn-block">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
 
-                </a>
+                    <button class="btn btn-info btn-block" data-toggle="modal" data-target="#pagamentoModal">
+                        <i class="fas fa-dollar-sign"></i> Registrar Pagamento
+                    </button>
 
-                <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
-                      method="POST">
+  
 
-                    @csrf
+                    <button class="btn btn-secondary btn-block" data-toggle="modal" data-target="#renovarModal{{ $locacao->uuid }}">
+                        <i class="fas fa-sync"></i> Renovar
+                    </button>
 
-                    <button type="button" class="btn btn-info btn-block mb-2"
-        data-toggle="modal"
-        data-target="#renovarModal{{ $locacao->uuid }}">
-    
-    <i class="fas fa-sync"></i>
-Renovar
-</button>
 
-                </form>
+                    @if($locacao->status == 'ativa')
+                    <button class="btn btn-warning btn-block" data-toggle="modal" data-target="#retiradaModal">
+                        <i class="fas fa-truck"></i> Agendar Retirada
+                    </button>
+                    @endif
 
-                <button class="btn btn-success btn-block mb-2"
-                data-toggle="modal"
-                data-target="#pagamentoModal">
-
-                <i class="fas fa-dollar-sign"></i>
-
-                Registrar Pagamento
-
-                </button>
-
-                @if($locacao->status == 'ativa')
-
-<button
-class="btn btn-warning btn-block mb-2"
-data-toggle="modal"
-data-target="#retiradaModal"
->
-
-<i class="fas fa-book"></i>
-
-Agendar Retirada
-
-</button>
-
-@endif
-
-@if($locacao->status == 'aguardando_retirada')
+                    @if($locacao->status == 'aguardando_retirada')
 
 <button
 class="btn btn-danger btn-block mb-2"
@@ -484,396 +507,20 @@ Retirada realizada
 
 @endif
 
-            </div>
-
-        </div>
-@php
-
-$cobrancas = Pagamento::where(
-        'locacao_id',
-        $locacao->id
-    )
-    ->where(
-        'tipo',
-        'cobranca'
-    )
-    ->get();
-
-$saldoPendente = 0;
-
-$totalPago = Pagamento::where(
-        'locacao_id',
-        $locacao->id
-    )
-    ->where(
-        'tipo',
-        'pagamento'
-    )
-    ->sum('valor');
-
-
-foreach ($cobrancas as $cobranca) {
-
-    $pagoDaCobranca = Pagamento::where(
-            'cobranca_id',
-            $cobranca->id
-        )
-        ->where(
-            'tipo',
-            'pagamento'
-        )
-        ->sum('valor');
-
-
-    $saldo =
-
-        $cobranca->valor
-
-        -
-
-        $pagoDaCobranca;
-
-
-    if ($saldo > 0) {
-
-        $saldoPendente += $saldo;
-
-    }
-
-}
-
-@endphp
-        <div class="card">
-
-    <div class="card-header">
-
-        <h3 class="card-title">
-
-            Resumo
-
-        </h3>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="mb-3">
-
-            <strong>Status</strong><br>
-
-            @if($locacao->status == 'ativa')
-
-                        <span class="badge badge-success">
-
-                            Ativa
-
-                        </span>
-
-                    @elseif($locacao->status == 'atrasada')
-
-                        <span class="badge badge-danger">
-
-                            Atrasada
-
-                        </span>
-
-                    @elseif($locacao->status == 'aguardando_entrega')
-
-                        <span class="badge badge-secondary">
-
-                            Aguardando Entrega
-
-                        </span>
-
-                    @elseif($locacao->status == 'aguardando_retirada')
-
-                        <span class="badge badge-danger">
-
-                            Aguardando Retirada
-
-                        </span>
-
-                    @else
-
-                        <span class="badge badge-secondary">
-
-                            Finalizada
-
-                        </span>
-
-                    @endif
-
-        </div>
-
-        <div class="mb-3">
-
-            <strong>Renovações</strong><br>
-
-            {{ $locacao->renovacoes->count() }}
-
-        </div>
-
-        <div class="mb-3">
-
-            <strong>Dias restantes</strong><br>
-
-            @php
-
-$dias = now()
-    ->startOfDay()
-    ->diffInDays(
-        \Carbon\Carbon::parse(
-            $locacao->data_vencimento
-        )->startOfDay(),
-        false
-    );
-
-@endphp
-
-            @if($dias < 0)
-
-    <span class="text-danger">
-
-        {{ abs($dias) }} dias atrasado
-
-    </span>
-
-@else
-
-    {{ $dias }} dias restantes
-
-@endif
-
-        </div>
-
-        <div class="mb-3">
-
-            <strong>Observações</strong><br>
-
-            {{ $locacao->observacoes ?? '-' }}
-
-        </div>
-        
-
-
-
-
-
-<hr>
-<div class="mb-3">
-<strong>Total Pago</strong>
-
-<br>
-
-<span class="text-info">
-
-    R$
-    {{ number_format($totalPago, 2, ',', '.') }}
-
-</span>
-
-</div>
-<div class="mb-3">
-
-<strong>Pagamentos</strong>
-
-<br>
-
-{{
-     $pagamentos = Pagamento::where('locacao_id', $locacao->id)
-    ->where('tipo', 'pagamento')
-    ->count();
-}}
-</div>
-<div class="mb-3">
-
-<strong>Saldo Pendente</strong>
-
-<br>
-
-@if($cobrancas->count() <= 0)
-    <span class="badge badge-secondary">
-        Sem cobrança
-    </span>
-
-@elseif($saldoPendente <= 0)
-
-    <span class="badge badge-success">
-        Quitado
-    </span>
-
-@elseif($totalPago > 0)
-
-    <span class="badge badge-warning">
-        Parcial
-    </span>
-
-    <span class="badge badge-danger">
-        R$ {{ number_format($saldoPendente, 2, ',', '.') }} pendente
-    </span>
-
-@else
-
-    <span class="badge badge-danger">
-        Pendente
-    </span>
-    <span class="badge badge-danger">
-        R$ {{ number_format($saldoPendente, 2, ',', '.') }} pendente
-    </span>
-@endif
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
-</div>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-
-@php
-
-$planoAtual = $locacao->plano;
-
-$novaData =
-\Carbon\Carbon::parse(
-    $locacao->data_vencimento
-)->addDays(
-    $planoAtual->duracao_dias
-);
-
-@endphp
-
-
-<div class="modal fade"
-     id="renovarModal{{ $locacao->uuid }}"
-     tabindex="-1">
-
-    <div class="modal-dialog">
-
-        <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
-              method="POST">
-
-            @csrf
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h5 class="modal-title">
-
-                        Renovar Locação
-
-                    </h5>
-
-                    <button type="button"
-                            class="close"
-                            data-dismiss="modal">
-
-                        <span>&times;</span>
-
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <div class="form-group">
-
-                        <label>Plano</label>
-<select name="plano_id"
-        class="form-control plano-select" required>
-
-                            @foreach($planos as $plano)
-
-                            <option value="{{ $plano->id }}"
-        data-dias="{{ $plano->duracao_dias }}"
-        {{ $locacao->plano_id == $plano->id ? 'selected' : '' }}>
-
-    {{ $plano->nome }}
-    -
-    R$ {{ number_format($plano->valor, 2, ',', '.') }}
-
-</option>
-
-                            @endforeach
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>Novo vencimento</label>
-                        <input type="date"
-       name="data_vencimento"
-       class="form-control data-vencimento"
-       data-vencimento-original="{{ $locacao->data_vencimento }}"
-       value="{{ $novaData->format('Y-m-d') }}"
-       required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>Observações</label>
-
-                        <textarea name="observacoes"
-                                  class="form-control"></textarea>
-
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-dismiss="modal">
-
-                        Cancelar
-
-                    </button>
-
-                    <button class="btn btn-primary">
-
-                        Confirmar Renovação
-
-                    </button>
-
                 </div>
 
             </div>
+        </div>
 
-        </form>
+        {{-- RESUMO --}}
+        @include('locacoes.partials.resumo', ['locacao' => $locacao])
 
     </div>
 
 </div>
+
+
+
 
 <div class="modal fade"
      id="pagamentoModal"
@@ -992,6 +639,7 @@ $novaData =
     </div>
 
 </div>
+
 
 
 <div
@@ -1152,6 +800,124 @@ Finalizar retirada
 </div>
 
 </div>
+
+@php
+
+$planoAtual = $locacao->plano;
+
+$novaData =
+\Carbon\Carbon::parse(
+    $locacao->data_vencimento
+)->addDays(
+    $planoAtual->duracao_dias
+);
+
+@endphp
+<div class="modal fade"
+     id="renovarModal{{ $locacao->uuid }}"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
+              method="POST">
+
+            @csrf
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Renovar Locação
+
+                    </h5>
+
+                    <button type="button"
+                            class="close"
+                            data-dismiss="modal">
+
+                        <span>&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+
+                        <label>Plano</label>
+<select name="plano_id"
+        class="form-control plano-select" required>
+
+                            @foreach($planos as $plano)
+
+                            <option value="{{ $plano->id }}"
+        data-dias="{{ $plano->duracao_dias }}"
+        {{ $locacao->plano_id == $plano->id ? 'selected' : '' }}>
+
+    {{ $plano->nome }}
+    -
+    R$ {{ number_format($plano->valor, 2, ',', '.') }}
+
+</option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Novo vencimento</label>
+                        <input type="date"
+       name="data_vencimento"
+       class="form-control data-vencimento"
+       data-vencimento-original="{{ $locacao->data_vencimento }}"
+       value="{{ $novaData->format('Y-m-d') }}"
+       required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Observações</label>
+
+                        <textarea name="observacoes"
+                                  class="form-control"></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+                    <button class="btn btn-primary">
+
+                        Confirmar Renovação
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 @stop
 @section('js')
 
@@ -1211,5 +977,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
-
 @stop

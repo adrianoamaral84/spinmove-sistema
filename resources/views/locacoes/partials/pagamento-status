@@ -1,0 +1,19 @@
+@if($pagamento->status == 'pago')
+
+    <span class="badge badge-success">
+        Pago
+    </span>
+
+@elseif($pagamento->status == 'pendente')
+
+    <span class="badge badge-warning">
+        Pendente
+    </span>
+
+@else
+
+    <span class="badge badge-danger">
+        Cancelado
+    </span>
+
+@endif

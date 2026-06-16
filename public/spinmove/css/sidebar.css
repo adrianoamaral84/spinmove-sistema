@@ -1,0 +1,56 @@
+/* SIDEBAR */
+
+.main-sidebar {
+    background: #1a1a1a !important;
+    border-right: 1px solid #2d2d2d;
+}
+
+/* LOGO */
+
+.brand-link {
+    background: #111 !important;
+    border-bottom: 1px solid #2d2d2d;
+    padding: 15px;
+}
+
+/* TEXTO MENU */
+
+.nav-sidebar .nav-link {
+    color: #d8d8d8 !important;
+
+    border-radius: 10px;
+
+    margin: 4px 10px;
+
+    transition: all .2s;
+}
+
+/* HOVER */
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(255,106,0,.15);
+
+    color: #fff !important;
+}
+
+/* ITEM ATIVO */
+
+.nav-sidebar .nav-link.active {
+    background: #FF6A00 !important;
+
+    color: white !important;
+
+    box-shadow: 0 0 10px rgba(255,106,0,.4);
+}
+
+/* ÍCONES */
+
+.nav-sidebar .nav-icon {
+    color: #FF6A00;
+}
+
+/* SUBMENU */
+
+.nav-treeview {
+    margin-left: 10px;
+}

@@ -63,12 +63,14 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo' => 'SpinMove',
+    'logo_img' => 'spinmove/logo/logo.png',
+    
+    //'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_class' => 'brand-image elevation-0',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'SpinMove Logo',
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +88,7 @@ return [
     'auth_logo' => [
         'enabled' => false,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+            'path' => 'spinmove/logo/logo.png',
             'alt' => 'Auth Logo',
             'class' => '',
             'width' => 50,
@@ -113,8 +115,8 @@ return [
         'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'spinmove/logo/logo.png',
+            'alt' => 'SpinMove Preloader Image',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -196,9 +198,13 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    //'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => '',
+    //'classes_sidebar' => 'sidebar-dark elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-white navbar-light',
+    //'classes_topnav' => 'navbar-white navbar-light',
+    'classes_topnav' => '',
+    //'classes_topnav' => 'navbar-dark',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
 
@@ -257,7 +263,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'home',
+    'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -300,14 +306,28 @@ return [
 
     'menu' => [
 
-    // DASHBOARD
+    /*
+    |--------------------------------------------------------------------------
+    | GERAL
+    |--------------------------------------------------------------------------
+    */
+
+    ['header' => 'GERAL'],
+
     [
         'text' => 'Dashboard',
         'route' => 'dashboard',
-        'icon' => 'fas fa-fw fa-tachometer-alt',
+        'icon' => 'fas fa-chart-line',
     ],
 
-    // CLIENTES
+    /*
+    |--------------------------------------------------------------------------
+    | OPERAÇÃO
+    |--------------------------------------------------------------------------
+    */
+
+    ['header' => 'OPERAÇÃO'],
+
     [
         'text' => 'Clientes',
         'route' => 'clientes.index',
@@ -315,51 +335,64 @@ return [
     ],
 
     [
-    'text' => 'Bikes',
-    'url'  => 'bikes',
-    'icon' => 'fas fa-bicycle',
+        'text' => 'Bikes',
+        'url'  => 'bikes',
+        'icon' => 'fas fa-bicycle',
     ],
+
     [
-    'text' => 'Vendas',
-    'url'  => 'vendas',
-    'icon' => 'fas fa-dollar-sign',
-],
-[
-    'text' => 'Locações',
-    'url'  => 'locacoes',
-    'icon' => 'fas fa-file-contract',
-],
-    // PLANOS
+        'text' => 'Locações',
+        'url'  => 'locacoes',
+        'icon' => 'fas fa-file-contract',
+    ],
+
+    [
+        'text' => 'Vendas',
+        'url'  => 'vendas',
+        'icon' => 'fas fa-shopping-cart',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | FINANCEIRO
+    |--------------------------------------------------------------------------
+    */
+
+    ['header' => 'FINANCEIRO'],
+
+    [
+        'text' => 'Contas a Receber',
+        'url'  => 'financeiro',
+        'icon' => 'fas fa-wallet',
+    ],
+
+    [
+        'text' => 'Cobrança',
+        'route' => 'clientes.cobranca',
+        'icon' => 'fas fa-comment-dollar',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURAÇÕES
+    |--------------------------------------------------------------------------
+    */
+
+    ['header' => 'CONFIGURAÇÕES'],
+
     [
         'text' => 'Planos',
         'route' => 'planos.index',
         'icon' => 'fas fa-layer-group',
     ],
 
-    // DIVISOR
-    ['header' => 'Financeiro'],
-
     [
-    'text' => 'Contas a Receber',
-
-    'url' => 'financeiro',
-
-    'icon' => 'fas fa-wallet',
-],
-    // PAGAMENTOS (atalho opcional)
-    [
-        'text' => 'Pagamentos',
-        'url' => 'clientes', // pode apontar para clientes
-        'icon' => 'fas fa-money-bill',
-    ],
-    [
-    'text' => 'Cobrança',
-    'route' => 'clientes.cobranca',
-    'icon' => 'fas fa-comment-dollar',
-    ],
-
+    'text' => 'Relatórios',
+    'route' => 'relatorios.index',
+    'icon' => 'fas fa-chart-pie',
 ],
 
+],
     /*
     |--------------------------------------------------------------------------
     | Menu Filters
@@ -450,6 +483,16 @@ return [
                 ],
             ],
         ],
+        'SpinMoveCss' => [
+    'active' => true,
+    'files' => [
+        [
+            'type' => 'css',
+            'asset' => true,
+            'location' => 'spinmove/css/spinmove.css',
+        ],
+    ],
+],
         'Pace' => [
             'active' => false,
             'files' => [
@@ -466,6 +509,7 @@ return [
             ],
         ],
     ],
+    
 
     /*
     |--------------------------------------------------------------------------

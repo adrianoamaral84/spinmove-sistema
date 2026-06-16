@@ -63,5 +63,14 @@ public function getRouteKeyName()
 {
     return 'uuid';
 }
-
+public function getStatusLabelAttribute()
+{
+    return match($this->status) {
+        'ativa' => 'Ativa',
+        'atrasada' => 'Atrasada',
+        'aguardando_entrega' => 'Aguardando Entrega',
+        'aguardando_retirada' => 'Aguardando Retirada',
+        default => 'Finalizada'
+    };
+}
 }

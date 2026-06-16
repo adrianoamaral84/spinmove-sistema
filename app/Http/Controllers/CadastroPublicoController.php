@@ -6,6 +6,8 @@ use App\Models\Cliente;
 use App\Models\Plano;
 use Illuminate\Http\Request;
 use App\Services\ClienteService;
+use App\Models\ClienteHistorico;
+use App\Services\HistoricoService;
 
 class CadastroPublicoController extends Controller{
 
@@ -52,7 +54,11 @@ public function store(Request $request, ClienteService $service)
         'profissao' => 'required',
         'estado_civil' => 'required',
         'origem' => 'required',
-        'plano_id' => 'required|exists:planos,id'
+        'plano_id' => 'required|exists:planos,id',
+        'cep' => 'required|string|size:9|regex:/^\d{5}-\d{3}$/',
+        'numero' => 'required|string|max:20',
+        'cidade' => 'required|string|max:100',
+        'aceite' => 'required'
     ],[
     'nome.required' => 'O nome é obrigatório.',
     'telefone.required' => 'Informe o telefone.',
@@ -66,12 +72,29 @@ public function store(Request $request, ClienteService $service)
     'estado_civil.required' => 'Informe o estado civil.',
     'origem.required' => 'Informe o onde nos conheceu.',
     'plano_id.required' => 'Selecione um plano.',
-    'plano_id.exists' => 'O plano selecionado não existe.'
+    'plano_id.exists' => 'O plano selecionado não existe.',
+    'cep.required' => 'O CEP é obrigatório.',
+    'numero.required' => 'O número é obrigatório.',
+    'cidade.required' => 'A cidade é obrigatória.',
+    'aceite.required' => 'O Termo precisa ser aceito'
+    
 ]);
 
-    //dd($request->all());
+    
         
-    $service->criar($data);
+    $cliente = $service->criar($data);
+    
+    HistoricoService::registrar(
+    $cliente->id,
+    'Cadastro realizado',
+    'Cadastro enviado pelo formulário público'
+);
+   HistoricoService::registrar(
+    $cliente->id,
+    'Termo aceito',
+    'Cliente aceitou os termos da locação'
+);
+    
     //return redirect()->back()->with('success', 'Cadastro realizado com sucesso!');
     return view('public.sucesso');
 }

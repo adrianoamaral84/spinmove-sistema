@@ -44,7 +44,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/teste-hora', function () {
 
+   dd([
+    'timezone' => config('app.timezone'),
+    'now' => now()->format('d/m/Y H:i:s'),
+    
+]);
+
+});
 
 Route::middleware(['auth'])->group(function () {
 
@@ -194,4 +202,9 @@ NotificationController::class,
 
 
 Route::post('/bikes/lote',[BikeController::class,'storeLote'])->name('bikes.lote.store');
+
+Route::get('/relatorios', [App\Http\Controllers\RelatorioController::class, 'index'])
+    ->name('relatorios.index');
+
+
 require __DIR__.'/auth.php';

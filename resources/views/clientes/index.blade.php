@@ -1,244 +1,133 @@
 @extends('adminlte::page')
 
 @section('title', 'Clientes')
+@section('css')
+<link rel="stylesheet" href="{{ asset('spinmove/css/spinmove.css') }}">
+@stop
 
 @section('content_header')
-    <h1>Clientes</h1>
+<div class="mb-4">
+    <h1 class="mb-1">Clientes</h1>
+
+    <small class="text-muted">
+        Gerencie todos os clientes da SpinMove
+    </small>
+</div>
 @stop
+
 
 @section('content')
 <div class="row mb-4">
 
-<div class="col-md-2">
-
-<div class="small-box bg-info">
-
-<div class="inner">
-
-<h3>
-
-{{ $totalClientes }}
-
-</h3>
-
-<p>
-
-Total Clientes
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-success">
-
-<div class="inner">
-
-<h3>
-
-{{ $clientesAtivos }}
-
-</h3>
-
-<p>
-
-Clientes Ativos
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-danger">
-
-<div class="inner">
-
-<h3>
-
-{{ $inadimplentes }}
-
-</h3>
-
-<p>
-
-Inadimplentes
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-warning">
-
-<div class="inner">
-
-<h3>
-
-{{ $novosMes }}
-
-</h3>
-
-<p>
-
-Novos no mês
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-primary">
-
-<div class="inner">
-
-<h3>
-
-R$
-
-{{ number_format(
-$ticketMedio,
-2,
-',',
-'.'
-) }}
-
-</h3>
-
-<p>
-
-Ticket Médio
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-secondary">
-
-<div class="inner">
-
-<h3>
-
-{{ $clientes
-->total()
-}}
-
-</h3>
-
-<p>
-
-Exibidos
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div><div class="col-md-12">
-
-<div class="card">
-
-<div class="card-header bg-success">
-
-<h3 class="card-title">
-
-Novos Clientes (7 dias)
-
-</h3>
-
-</div>
-
-<div class="card-body p-2">
-
-<div class="row">
-
-@forelse($novos7Dias as $cliente)
-
-<div class="col-md-6 mb-2">
-
-<div
-class="border rounded p-2"
->
-
-<strong>
-
-{{ $cliente->nome }}
-
-</strong>
-
-<br>
-
-<small>
-
-{{ $cliente->telefone }}
-
-</small>
-
-<br>
-
-<small class="text-muted">
-
-{{ $cliente->created_at->format('d/m/Y') }}
-
-</small>
-
-</div>
-
-</div>
-
-@empty
-
-<div class="col-12">
-
-Nenhum cliente novo.
-
-</div>
-
-@endforelse
-
-</div>
-
-</div>
-
-</div>
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-blue">
+                    <i class="fas fa-users"></i>
+                </div>
+
+                <h3>{{ $totalClientes }}</h3>
+
+                <small class="text-muted">
+                    Total Clientes
+                </small>
+            </div>
+
+            <div class="dashboard-line line-blue"></div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-green">
+                    <i class="fas fa-user-check"></i>
+                </div>
+
+                <h3>{{ $clientesAtivos }}</h3>
+
+                <small class="text-muted">
+                    Clientes Ativos
+                </small>
+            </div>
+
+            <div class="dashboard-line line-green"></div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-red">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+
+                <h3>{{ $inadimplentes }}</h3>
+
+                <small class="text-muted">
+                    Inadimplentes
+                </small>
+            </div>
+
+            <div class="dashboard-line line-red"></div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-orange">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+
+                <h3>{{ $novosMes }}</h3>
+
+                <small class="text-muted">
+                    Novos no mês
+                </small>
+            </div>
+
+            <div class="dashboard-line line-orange"></div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-green">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+
+                <h3>
+                    R$ {{ number_format($ticketMedio,2,',','.') }}
+                </h3>
+
+                <small class="text-muted">
+                    Ticket Médio
+                </small>
+            </div>
+
+            <div class="dashboard-line line-green"></div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <div class="dashboard-icon mx-auto mb-2 icon-gray">
+                    <i class="fas fa-list"></i>
+                </div>
+
+                <h3>{{ $clientes->total() }}</h3>
+
+                <small class="text-muted">
+                    Exibidos
+                </small>
+            </div>
+
+            <div class="dashboard-line line-gray"></div>
+        </div>
+    </div>
 
 </div>
 
@@ -247,17 +136,21 @@ Nenhum cliente novo.
 
     <!-- BOTÃO ESQUERDA -->
     <div class="col-md-6">
-        <a href="{{ route('clientes.create') }}" class="btn btn-primary">
-            + Novo Cliente
-        </a>
+        <a href="{{ route('clientes.create') }}" class="btn btn-success">
+    <i class="fas fa-plus mr-1"></i>
+    Novo Cliente
+</a>
     </div>
 
     <!-- BUSCA DIREITA -->
     <div class="col-md-6 d-flex justify-content-end">
         
-                <input type="text" id="busca"
+                <input
+    type="text"
+    id="busca"
     class="form-control"
-    placeholder="Buscar cliente...">
+    placeholder="🔍 Buscar por nome, telefone ou CPF..."
+>
 
                 
 
@@ -293,37 +186,40 @@ Nenhum cliente novo.
 
 
 
+<div class="card">
+    <div class="card-body p-0">
+
+        <table class="table table-hover mb-0">    
+            <thead>
+                <tr>
+
+                    <th>Cliente</th>
+
+                    <th style="text-align: center;">Telefone</th>
+
+                    <th style="text-align: center;">Bairro</th>
+
+                    <th style="text-align: center;">Cliente Desde</th>
+
+                    <th style="text-align: center;">Locações</th>
+
+                    <th style="text-align: center;">Total Gerado</th>
+
+                    <th style="text-align: center;">Status</th>
+
+                    <th style="text-align: center;" width="220">Ações</th>
+
+                </tr>
+            </thead>
+
+            <tbody id="tabela-clientes">
+                @include('clientes.partials.tabela')
+            </tbody>
 
 
-<table class="table table-hover table-bordered">    
-<thead>
-        <tr>
-
-            <th>Cliente</th>
-
-            <th style="text-align: center;">Telefone</th>
-
-            <th style="text-align: center;">Bairro</th>
-
-            <th style="text-align: center;">Cliente Desde</th>
-
-            <th style="text-align: center;">Locações</th>
-
-            <th style="text-align: center;">Total Gerado</th>
-
-            <th style="text-align: center;">Status</th>
-
-            <th style="text-align: center;" width="220">Ações</th>
-
-        </tr>
-    </thead>
-
-    <tbody id="tabela-clientes">
-        @include('clientes.partials.tabela')
-    </tbody>
 </table>
-
-
+</div>
+</div>
 
 
 <div id="loading" style="display:none;" class="text-center">
