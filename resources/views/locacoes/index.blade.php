@@ -278,8 +278,9 @@
                     </td>
 
                     <td>
-                        <div class="d-flex align-items-center">
-                            <a href="{{ route('locacoes.show', $locacao->uuid) }}"
+<div class="table-actions">
+    
+<a href="{{ route('locacoes.show', $locacao->uuid) }}"
                                class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i>
                             </a>
@@ -291,7 +292,7 @@
 
 			@if($locacao->status == 'aguardando_entrega')
 
-			<button class="btn btn-success btn-sm mr-1" data-toggle="modal" data-target="#entregaModal{{ $locacao->uuid }}" title="Entregar Bike">
+			<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#entregaModal{{ $locacao->uuid }}" title="Entregar Bike">
 
     <i class="fas fa-check"></i>
 </button>
@@ -301,7 +302,7 @@
 
     <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
           method="POST"
-          class="mr-1"
+          
           style="display:inline-block">
 
         @csrf
@@ -319,7 +320,7 @@
  @if($locacao->status == 'aguardando_retirada')
   <form action="{{ route('locacoes.devolver', $locacao->uuid) }}"
           method="POST"
-          class="mr-1"
+          
           style="display:inline-block">
 
         @csrf
@@ -337,9 +338,7 @@
 
 @endif
 
-<button class="btn btn-secondary btn-sm"
-            data-toggle="modal"
-            data-target="#historicoModal{{ $locacao->id }}" title="Historico Renovação">
+<button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#historicoModal{{ $locacao->id }}" title="Historico Renovação">
 
         <i class="fas fa-history"></i>
 

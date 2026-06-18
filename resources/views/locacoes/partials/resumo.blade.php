@@ -27,85 +27,113 @@
 
 <div class="card">
 
-    <div class="card-header">
-        <h3 class="card-title">Resumo</h3>
-    </div>
-
     <div class="card-body">
 
-        <div class="mb-3">
-            <strong>Status</strong><br>
-            @include('locacoes.partials.status', ['locacao' => $locacao])
-        </div>
+        <div class="section-block mb-4">
 
-        <div class="mb-3">
-            <strong>Renovações</strong><br>
-            {{ $locacao->renovacoes->count() }}
-        </div>
+            <div class="d-flex align-items-center mb-2">
 
-        <div class="mb-3">
-            <strong>Dias restantes</strong><br>
+                <i class="far fa-file-alt text-primary mr-2"></i>
 
-            @php
-                $dias = now()->startOfDay()->diffInDays(
-                    \Carbon\Carbon::parse($locacao->data_vencimento)->startOfDay(),
-                    false
-                );
-            @endphp
+                <h5 class="mb-0">
+                    Resumo
+                </h5>
 
-            @if($dias < 0)
-                <span class="text-danger">{{ abs($dias) }} dias atrasado</span>
-            @else
-                {{ $dias }} dias restantes
-            @endif
+            </div>
 
         </div>
 
-        <div class="mb-3">
-            <strong>Observações</strong><br>
-            {{ $locacao->observacoes ?? '-' }}
-        </div>
+   <div class="resumo-row">
+    <span class="resumo-label">Status</span>
+    <span class="resumo-value">
+        @include('locacoes.partials.status', ['locacao' => $locacao])
+    </span>
+</div>
 
+<div class="resumo-row">
+    <span class="resumo-label">Renovações</span>
+    <span class="resumo-value">
+        {{ $locacao->renovacoes->count() }}
+    </span>
+</div>
+
+<div class="resumo-row">
+    <span class="resumo-label">Dias Restantes</span>
+    <span class="resumo-value">
+        @if($dias < 0)
+                    <span class="badge badge-danger">
+                        {{ abs($dias) }} dias atrasado
+                    </span>
+                @else
+                    <span class="badge badge-primary">
+                        {{ $dias }} dias
+                    </span>
+                @endif
+    </span>
+</div>
+
+<div class="resumo-row">
+    <span class="resumo-label">Observações</span>
+    <span class="resumo-value">
+        {{ $locacao->observacoes ?? '-' }}
+    </span>
+</div>
+
+        @php
+            $dias = now()->startOfDay()->diffInDays(
+                \Carbon\Carbon::parse($locacao->data_vencimento)->startOfDay(),
+                false
+            );
+        @endphp
+
+        
+
+        
         <hr>
 
-        <div class="mb-3">
-            <strong>Total Pago</strong><br>
-            <span class="text-info">
+        <div class="resumo-row">
+            <span class="resumo-label">Total Pago</span>
+            <span class="resumo-value text-info">
                 R$ {{ number_format($totalPago, 2, ',', '.') }}
             </span>
         </div>
 
-        <div class="mb-3">
-            <strong>Pagamentos</strong><br>
-            {{ $pagamentos = Pagamento::where('locacao_id', $locacao->id)
-                ->where('tipo', 'pagamento')
-                ->count()
-            }}
+        <div class="resumo-row">
+            <span class="resumo-label">Pagamentos</span>
+            <span class="resumo-value">
+                {{ Pagamento::where('locacao_id', $locacao->id)->where('tipo', 'pagamento')->count() }}
+            </span>
         </div>
 
-        <div class="mb-3">
-            <strong>Saldo Pendente</strong><br>
+        <div class="resumo-row">
+            <span class="resumo-label">Saldo Pendente</span>
 
-            @if($cobrancas->count() <= 0)
-                <span class="badge badge-secondary">Sem cobrança</span>
+            <span class="resumo-value">
 
-            @elseif($saldoPendente <= 0)
-                <span class="badge badge-success">Quitado</span>
+                @if($cobrancas->count() <= 0)
 
-            @elseif($totalPago > 0)
-                <span class="badge badge-warning">Parcial</span>
-                <span class="badge badge-danger">
-                    R$ {{ number_format($saldoPendente, 2, ',', '.') }} pendente
-                </span>
+                    <span class="badge badge-secondary">
+                        Sem cobrança
+                    </span>
 
-            @else
-                <span class="badge badge-danger">Pendente</span>
-                <span class="badge badge-danger">
-                    R$ {{ number_format($saldoPendente, 2, ',', '.') }} pendente
-                </span>
-            @endif
+                @elseif($saldoPendente <= 0)
+
+                    <span class="badge badge-success">
+                        Quitado
+                    </span>
+
+                @else
+
+                    <span class="badge badge-danger">
+                        R$ {{ number_format($saldoPendente, 2, ',', '.') }}
+                    </span>
+
+                @endif
+
+            </span>
 
         </div>
 
     </div>
+
 </div>

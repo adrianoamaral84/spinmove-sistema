@@ -13,6 +13,8 @@
     --sm-border: #e5e7eb;
 }
 
+
+
 /* =========================
    BASE
 ========================= */
@@ -101,9 +103,9 @@ body{
     transition: .2s;
 }
 
-.card:hover{
+/* .card:hover{
     transform: translateY(-2px);
-}
+} */
 
 .card-header{
     background:#fff !important;
@@ -196,6 +198,12 @@ body{
     overflow:hidden;
 }
 
+.table-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
 /* =========================
    FORMS & BUTTONS
 ========================= */
@@ -223,19 +231,98 @@ label{
     margin-bottom: 24px;
 }
 
+
+
+
+
+/* ==========================
+   CARD AÇÕES
+========================== */
+
 .actions-group{
     display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-items:center;
+    flex-direction:column;
+    gap:10px;
 }
 
 .actions-group .btn{
-    transition:.15s;
+    height:52px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:600;
+
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+    padding:0 16px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.actions-group .btn i{
+    width:22px;
+    margin-right:12px;
+    text-align:center;
+    font-size:16px;
+}
+
+/* WhatsApp */
+
+.actions-group .btn-success{
+    background:linear-gradient(
+        135deg,
+        #16a34a,
+        #0ea84d
+    ) !important;
+}
+
+/* Pagamento */
+
+.actions-group .btn-info{
+    background:linear-gradient(
+        135deg,
+        #3b82f6,
+        #4f46e5
+    ) !important;
+    color:#fff !important;
+}
+
+/* Renovar */
+
+.actions-group .btn-secondary{
+    background:linear-gradient(
+        135deg,
+        #f97316,
+        #ff8a00
+    ) !important;
+    color:#fff !important;
+}
+
+/* Retirada */
+
+.actions-group .btn-warning{
+    background:linear-gradient(
+        135deg,
+        #8b5cf6,
+        #7c3aed
+    ) !important;
+    color:#fff !important;
+}
+
+/* Retirada realizada */
+
+.actions-group .btn-danger{
+    background:linear-gradient(
+        135deg,
+        #ef4444,
+        #dc2626
+    ) !important;
 }
 
 .actions-group .btn:hover{
-    transform: translateY(-1px);
+    transform:translateY(-1px);
 }
 /* =========================
    CLIENTE COMPONENTS
@@ -317,15 +404,20 @@ label{
     border-radius: 16px;
 }
 
-.event-header-icon {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4f46e5;
-    font-size: 24px;
-    margin-right: 14px;
+.event-header-icon{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.event-header-icon i{
+    font-size:22px;
+    color:#4f46e5;
 }
 
 .evento-item {
@@ -424,6 +516,73 @@ label{
         white-space: normal;
     }
 
-
     
+
+.event-header-icon{
+    width:40px;
+    height:40px;
+    min-width:40px;
+
+    border-radius:10px;
+    background:#eef2ff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.event-header-icon i{
+    font-size:18px;
+    color:#4f46e5;
+}
+
+.evento-item{
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    gap:18px;
+}
+
+.evento-icon{
+    margin-top:2px;
+}
+
+}
+
+.resumo-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid #f1f5f9;
+}
+
+.resumo-row:last-child{
+    border-bottom:none;
+}
+
+.resumo-label{
+    color:#64748b;
+    font-size:14px;
+    font-weight:500;
+}
+
+.resumo-value{
+    text-align:right;
+    font-weight:600;
+    color:#1e293b;
+}
+
+/* Títulos das seções do menu lateral */
+
+.main-sidebar .nav-header{
+    color: rgba(255,255,255,.45) !important;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.main-sidebar .nav-link i{
+    width:20px;
+    text-align:center;
 }

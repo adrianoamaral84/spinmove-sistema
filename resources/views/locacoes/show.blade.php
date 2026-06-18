@@ -109,13 +109,24 @@
 
     <div class="card-body">
 
-        <div class="section-block">
-            <h5>Informações da Locação</h5>
+       <div class="section-block">
 
-            <small class="text-muted">
-                Dados gerais do contrato
-            </small>
-        </div>
+    <div class="d-flex align-items-center mb-1">
+
+        <i class="fas fa-file-contract mr-3"
+           style="font-size:22px;color:#3b82f6;"></i>
+
+        <h5 class="mb-0">
+            Informações da Locação
+        </h5>
+
+    </div>
+
+    <small class="text-muted d-block" style="margin-left:3px;">
+    Resumo completo da locação, incluindo cliente, plano, bike e vencimento
+    </small>
+
+</div>
 
         <div class="row">
 
@@ -159,7 +170,7 @@
                 <div class="cliente-label">Bike</div>
                 <div class="cliente-value">
                     <div class="cliente-value">
-    <a href="{{ route('bikes.show', $locacao->bike->id) }}">
+    <a href="{{ route('bikes.show', $locacao->bike) }}">
     {{ $locacao->bike->modelo }}
     <i class="fas fa-arrow-right fa-xs"></i>
 </a>
@@ -240,7 +251,22 @@
             <div class="card-body p-0">
 
                 <div class="p-3">
-                    <h5>Histórico Financeiro</h5>
+                    <div class="d-flex align-items-center mb-1">
+
+        <i class="fas fa-dollar-sign mr-3"
+           style="font-size:22px;color:#16a34a;"></i>
+
+        <h5 class="mb-0">
+            Histórico Financeiro
+        </h5>
+
+    </div>
+
+    <small class="text-muted">
+        Todas as transações financeiras realizadas nesta locação
+    </small>
+
+
                 </div>
 
                 <table class="table table-hover mb-0">
@@ -299,11 +325,23 @@
     <div class="card-body p-0">
 
         <div class="p-3">
-            <h5>Histórico de Renovações</h5>
-            <small class="text-muted">
-                Todas as renovações realizadas nesta locação
-            </small>
-        </div>
+
+    <div class="d-flex align-items-center mb-1">
+
+        <i class="fas fa-sync-alt mr-2"
+           style="font-size:20px;color:#f97316;"></i>
+
+        <h5 class="mb-0">
+            Histórico de Renovações
+        </h5>
+
+    </div>
+
+    <small class="text-muted">
+        Todas as renovações realizadas nesta locação
+    </small>
+
+</div>
 
         <table class="table table-hover mb-0">
 
@@ -360,58 +398,51 @@
 
 
 
+
+
+
+
 <div class="card shadow-sm border-0 mb-4">
 
-    <div class="card-header bg-white border-0 pt-4 pb-2">
+    <div class="card-body">
 
-        <div class="d-flex align-items-center">
+        <div class="mb-4">
 
-            <div class="event-header-icon">
-                <i class="far fa-calendar-alt"></i>
-            </div>
+    <div class="d-flex align-items-center mb-1">
 
-            <div>
+        <i class="far fa-calendar-alt text-primary mr-2"></i>
 
-                <h4 class="mb-1 font-weight-bold">
-                    Eventos da Locação
-                </h4>
-
-                <small class="text-muted">
-                    Histórico completo desta locação
-                </small>
-
-            </div>
-
-        </div>
+        <h5 class="mb-0">
+            Eventos da Locação
+        </h5>
 
     </div>
 
-    <div class="card-body pt-3">
+    <small class="text-muted">
+        Histórico completo desta locação
+    </small>
 
-        @forelse($eventos as $evento)
+</div>
+ @forelse($eventos as $evento)
 
             <div class="evento-item">
 
                 <div class="evento-icon">
 
                     @if(str_contains(strtolower($evento['titulo']), 'pagamento'))
-
                         <div class="evento-circle pagamento">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
 
                     @elseif(str_contains(strtolower($evento['titulo']), 'renov'))
-
                         <div class="evento-circle renovacao">
                             <i class="fas fa-sync-alt"></i>
                         </div>
 
                     @else
-
                         <div class="evento-circle locacao">
                             <i class="fas fa-file-alt"></i>
                         </div>
-
                     @endif
 
                 </div>
@@ -449,23 +480,31 @@
             </div>
 
         @endforelse
+        
 
     </div>
 
 </div>
 
-
-    </div>
+</div>
 
     {{-- =========================
         AÇÕES (PADRÃO CLIENTES LATERAL)
     ========================== --}}
     <div class="col-md-4">
 
-        <div class="card dashboard-card">
+        <div class="card">
             <div class="card-body">
 
-                <h5 class="mb-3">Ações</h5>
+                <div class="d-flex align-items-center mb-3">
+
+    <i class="fas fa-bolt text-primary mr-2"></i>
+
+    <h5 class="mb-0">
+        Ações
+    </h5>
+
+</div>
 
                 <div class="actions-group">
 
