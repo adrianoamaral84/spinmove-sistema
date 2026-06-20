@@ -195,7 +195,7 @@ body{
 
 .table-responsive{
     border-radius:12px;
-    overflow:hidden;
+    overflow: visible !important;
 }
 
 .table-actions{
@@ -585,4 +585,158 @@ label{
 .main-sidebar .nav-link i{
     width:20px;
     text-align:center;
+}
+
+.badge-success{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.badge-danger{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+
+/* ==========================
+   FOOTER SIDEBAR
+========================== */
+
+
+.main-sidebar .sidebar{
+
+    position:relative;
+
+    height:calc(100vh - 57px);
+
+}
+
+
+
+
+
+
+/* ======================
+   SIDEBAR FOOTER
+====================== */
+
+
+
+
+.sidebar-footer{
+
+    padding:15px;
+
+    border-top:1px solid rgba(255,255,255,.1);
+
+}
+
+
+
+.sidebar-user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.sidebar-user-avatar{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#f47b20;
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:bold;
+
+}
+
+
+
+.sidebar-user-info{
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.sidebar-user-info small{
+
+    opacity:.6;
+
+}
+
+
+
+.sidebar-status{
+
+    color:#aaa;
+
+    font-size:12px;
+
+    margin-bottom:10px;
+
+}
+
+
+
+.status-dot{
+
+    width:8px;
+
+    height:8px;
+
+    background:#28a745;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+}
+
+
+
+.sidebar-logout{
+
+    width:100%;
+
+    background:rgba(255,255,255,.08);
+
+    border:0;
+
+    color:white;
+
+    padding:10px;
+
+    border-radius:8px;
+
+}
+
+
+.sidebar-logout:hover{
+
+    background:#f47b20;
+
 }

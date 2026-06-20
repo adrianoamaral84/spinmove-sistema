@@ -31,6 +31,7 @@ class StoreClienteRequest extends FormRequest
 'numero' => 'nullable|string|max:20',
 'cidade' => 'required|string|max:100',
 'cep' => 'required|string|size:8',
+'estado' => 'nullable|string|size:2',
 
         ];
     }
@@ -58,6 +59,7 @@ class StoreClienteRequest extends FormRequest
             'numero.max' => 'O número não pode exceder 20 caracteres',
             'cidade.required' => 'A cidade é obrigatória',
             'cep.required' => 'O CEP é obrigatório',
+            
         ];
     }
 

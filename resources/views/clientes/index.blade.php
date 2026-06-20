@@ -98,9 +98,9 @@
                     <i class="fas fa-dollar-sign"></i>
                 </div>
 
-                <h3>
+                <h4>
                     R$ {{ number_format($ticketMedio,2,',','.') }}
-                </h3>
+                </h4>
 
                 <small class="text-muted">
                     Ticket Médio

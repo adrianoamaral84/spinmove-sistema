@@ -2,130 +2,212 @@
 
 @section('title','Contas a Receber')
 
+
+@section('content_header')
+
+<div class="mb-4">
+
+    <h1 class="mb-1">
+        Contas a Receber
+    </h1>
+
+    <small class="text-muted">
+        Controle das mensalidades e renovações da SpinMove
+    </small>
+
+</div>
+
+@stop
+
+
+
 @section('content')
+
 
 <div class="card">
 
-    <div class="card-header">
 
-        <h3>
+    <div class="card-body p-0">
 
-            Contas a Receber
 
-        </h3>
+        <div class="p-3">
 
-    </div>
 
-    <div class="card-body">
+            <div class="d-flex align-items-center">
 
-        <table class="table table-bordered">
+                <i class="fas fa-file-invoice-dollar text-primary mr-2"></i>
 
-            <thead>
+
+                <h5 class="mb-0">
+
+                    Financeiro
+
+                </h5>
+
+
+            </div>
+
+
+            <small class="text-muted">
+
+                Acompanhe pagamentos, saldos pendentes e cobranças dos clientes
+
+            </small>
+
+
+        </div>
+
+
+
+        <div class="table-responsive">
+
+
+            <table class="table table-hover mb-0">
+
+
+                <thead>
+
+
+                    <tr>
+
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Cobrança
+                        </th>
+
+                        <th>
+                            Pago
+                        </th>
+
+                        <th>
+                            Saldo
+                        </th>
+
+                        <th>
+                            Vencimento
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Ações
+                        </th>
+
+
+                    </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+
+                @forelse($financeiro as $item)
+
+
 
                 <tr>
 
-                    <th>
 
-                        Cliente
-
-                    </th>
-
-                    <th>
-
-                        Cobrança
-
-                    </th>
-
-                    <th>
-
-                        Pago
-
-                    </th>
-
-                    <th>
-
-                        Saldo
-
-                    </th>
-
-                    <th>
-
-                        Vencimento
-
-                    </th>
-
-                    <th>
-
-                        Status
-
-                    </th>
-                    <th>Ações</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @foreach($financeiro as $item)
-
-                <tr>
 
                     <td>
 
-                        {{ $item['cliente'] }}
+                        <strong>
+
+                            {{ $item['cliente'] }}
+
+                        </strong>
+
 
                     </td>
 
+
+
+
                     <td>
 
-                        R$
-                        {{ number_format(
+                        R$ {{ number_format(
                             $item['valor'],
                             2,
                             ',',
                             '.'
                         ) }}
 
-                    </td>
-
-                    <td>
-
-                        R$
-                        {{ number_format(
-                            $item['pago'],
-                            2,
-                            ',',
-                            '.'
-                        ) }}
 
                     </td>
 
+
+
+
                     <td>
 
-                        R$
-                        {{ number_format(
-                            $item['saldo'],
-                            2,
-                            ',',
-                            '.'
-                        ) }}
+
+                        <span class="font-weight-bold text-success">
+
+
+                            R$ {{ number_format(
+                                $item['pago'],
+                                2,
+                                ',',
+                                '.'
+                            ) }}
+
+
+                        </span>
+
 
                     </td>
 
+
+
+
                     <td>
 
-                        {{ $item['vencimento']->format('d-m-Y') }}
+
+                        <span class="font-weight-bold text-danger">
+
+
+                            R$ {{ number_format(
+                                $item['saldo'],
+                                2,
+                                ',',
+                                '.'
+                            ) }}
+
+
+                        </span>
+
 
                     </td>
 
+
+
+
                     <td>
 
-                        @if(
-                            $item['status']
-                            ==
-                            'quitado'
-                        )
+
+                        {{ $item['vencimento']->format('d/m/Y') }}
+
+
+                    </td>
+
+
+
+
+                    <td>
+
+
+
+                    @if($item['status']=='quitado')
+
 
                         <span class="badge badge-success">
 
@@ -133,11 +215,10 @@
 
                         </span>
 
-                        @elseif(
-                            $item['status']
-                            ==
-                            'parcial'
-                        )
+
+
+                    @elseif($item['status']=='parcial')
+
 
                         <span class="badge badge-warning">
 
@@ -145,7 +226,10 @@
 
                         </span>
 
-                        @else
+
+
+                    @else
+
 
                         <span class="badge badge-danger">
 
@@ -153,24 +237,35 @@
 
                         </span>
 
-                        @endif
+
+
+                    @endif
+
+
 
                     </td>
 
+
+
+
+
                     <td>
+
+
 
 @php
 
 $numero = preg_replace(
-    '/[^0-9]/',
-    '',
-    $item['telefone']
+'/[^0-9]/',
+'',
+$item['telefone']
 );
+
 
 $mensagem =
 urlencode(
 
-"Olá {$item['cliente']}
+"Olá {$item['cliente']} 👋
 
 Sua renovação SpinMove está pendente.
 
@@ -182,37 +277,85 @@ $item['saldo'],
 '.'
 )."
 
-Após pagamento envie comprovante."
+Após pagamento envie o comprovante."
 
 );
+
 
 $link =
 "https://wa.me/55{$numero}?text={$mensagem}";
 
+
 @endphp
 
-<a
-href="{{ $link }}"
+
+
+<a href="{{ $link }}"
 target="_blank"
-class="btn btn-success btn-sm"
->
+class="btn btn-success btn-sm">
+
+
+<i class="fab fa-whatsapp"></i>
 
 WhatsApp
 
+
 </a>
 
-</td>
+
+
+                    </td>
+
+
 
                 </tr>
 
-                @endforeach
 
-            </tbody>
 
-        </table>
+                @empty
+
+
+
+                <tr>
+
+                    <td colspan="7" class="text-center py-5 text-muted">
+
+
+                        <i class="fas fa-file-invoice fa-2x mb-3 d-block"></i>
+
+
+                        Nenhuma conta encontrada.
+
+
+                    </td>
+
+
+                </tr>
+
+
+
+                @endforelse
+
+
+
+
+                </tbody>
+
+
+
+            </table>
+
+
+
+        </div>
+
+
 
     </div>
 
+
 </div>
+
+
 
 @stop

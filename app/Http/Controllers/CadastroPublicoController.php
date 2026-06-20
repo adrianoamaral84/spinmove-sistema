@@ -58,7 +58,8 @@ public function store(Request $request, ClienteService $service)
         'cep' => 'required|string|size:9|regex:/^\d{5}-\d{3}$/',
         'numero' => 'required|string|max:20',
         'cidade' => 'required|string|max:100',
-        'aceite' => 'required'
+        'aceite' => 'required',
+        'estado' => 'nullable|string|size:2',
     ],[
     'nome.required' => 'O nome é obrigatório.',
     'telefone.required' => 'Informe o telefone.',
@@ -76,8 +77,9 @@ public function store(Request $request, ClienteService $service)
     'cep.required' => 'O CEP é obrigatório.',
     'numero.required' => 'O número é obrigatório.',
     'cidade.required' => 'A cidade é obrigatória.',
-    'aceite.required' => 'O Termo precisa ser aceito'
-    
+    'aceite.required' => 'O Termo precisa ser aceito',
+    'estado.string' => 'O estado deve ser uma string.',
+    'estado.size' => 'O estado deve ter 2 caracteres.',
 ]);
 
     

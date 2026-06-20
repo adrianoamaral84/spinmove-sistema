@@ -24,6 +24,8 @@ date_default_timezone_set('America/Sao_Paulo');
             'status' => 'atrasada'
         ]);
 
+    $planos = Plano::all();
+
     $locacoes = Locacao::with([
     'cliente',
     'bike',
@@ -53,7 +55,8 @@ date_default_timezone_set('America/Sao_Paulo');
         'locacoesAtivas',
         'locacoesAtrasadas',
         'vencemHoje',
-        'receitaMensal'
+        'receitaMensal',
+        'planos'
     ));
 }
 

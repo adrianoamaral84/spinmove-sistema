@@ -10,6 +10,8 @@ class HistoricoEventos
    
     const RETIRADA_FINALIZADA = 'Retirada finalizada';
     
+    const RETIRADA_AGENDADA = 'Retirada agendada';
+    
     const AGUARDANDO_RETIRADA = 'Aguardando retirada';
     
     const CLIENTE_ATUALIZADO = 'Cliente atualizado';
@@ -25,4 +27,13 @@ class HistoricoEventos
     const PAGAMENTO_RECEBIDO = 'Pagamento recebido';
 
     const COBRANCA_ENVIADA = 'Cobrança enviada';
+    
+    const PAGAMENTO_REGISTRADO = 'Pagamento registrado';
+    
+    const LOCACAO_RENOVADA = 'Locação renovada';
+    
+    const LOCACAO_CRIADA = 'Locação criada';
+
+    const BIKE_DEVOLVIDA = 'Bike devolvida';
+
 }

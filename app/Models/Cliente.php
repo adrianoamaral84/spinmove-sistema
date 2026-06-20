@@ -39,7 +39,8 @@ class Cliente extends Model
     'cidade',
     'cep',
     'aceite_contrato',
-    'aceite_detalhes'
+    'aceite_detalhes',
+    'estado',
 
     
 ];

@@ -277,74 +277,97 @@
                         <small>R$ {{ number_format($saldoPendente,2,',','.') }}</small>
                     </td>
 
-                    <td>
-<div class="table-actions">
-    
-<a href="{{ route('locacoes.show', $locacao->uuid) }}"
-                               class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i>
-                            </a>
+                    <td class="text-center">
 
-                            <a href="{{ route('locacoes.edit', $locacao->uuid) }}"
-                               class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
+    <div class="dropdown position-static">
 
-			@if($locacao->status == 'aguardando_entrega')
+        <button class="btn btn-sm btn-light border shadow-sm"
+                type="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
 
-			<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#entregaModal{{ $locacao->uuid }}" title="Entregar Bike">
-
-    <i class="fas fa-check"></i>
-</button>
-@endif
-
- @if($locacao->status != 'aguardando_entrega')
-
-    <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
-          method="POST"
-          
-          style="display:inline-block">
-
-        @csrf
-
-        <button class="btn btn-primary btn-sm" title="Renovar Plano">
-
-            <i class="fas fa-sync"></i>
+            <i class="fas fa-ellipsis-v"></i>
 
         </button>
 
-    </form>
+        <div class="dropdown-menu dropdown-menu-right">
 
-@endif
+            <a class="dropdown-item"
+               href="{{ route('locacoes.show', $locacao->uuid) }}">
 
- @if($locacao->status == 'aguardando_retirada')
-  <form action="{{ route('locacoes.devolver', $locacao->uuid) }}"
-          method="POST"
-          
-          style="display:inline-block">
+                <i class="fas fa-eye text-info mr-2"></i>
+                Visualizar
 
-        @csrf
+            </a>
 
-        <button type="button" class="btn btn-danger btn-sm"
-        data-toggle="modal"
-        data-target="#devolverModal{{ $locacao->uuid }}" title="Retirar Bike">
+            <a class="dropdown-item"
+               href="{{ route('locacoes.edit', $locacao->uuid) }}">
 
-    <i class="fas fa-undo"></i>
+                <i class="fas fa-edit text-warning mr-2"></i>
+                Editar
 
-</button>
+            </a>
 
-    </form>
+            @if($locacao->status == 'aguardando_entrega')
 
+                <button type="button"
+                        class="dropdown-item"
+                        data-toggle="modal"
+                        data-target="#entregaModal{{ $locacao->uuid }}">
 
-@endif
+                    <i class="fas fa-check text-success mr-2"></i>
+                    Entregar Bike
 
-<button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#historicoModal{{ $locacao->id }}" title="Historico Renovação">
+                </button>
 
-        <i class="fas fa-history"></i>
+            @endif
+
+            @if($locacao->status != 'aguardando_entrega')
+
+               <button type="button"
+            class="dropdown-item"
+            data-toggle="modal"
+            data-target="#renovarModal{{ $locacao->uuid }}">
+
+        <i class="fas fa-sync text-primary mr-2"></i>
+        Renovar Plano
 
     </button>
-                        </div>
-                    </td>
+
+            @endif
+
+            @if($locacao->status == 'aguardando_retirada')
+
+                <button type="button"
+                        class="dropdown-item"
+                        data-toggle="modal"
+                        data-target="#devolverModal{{ $locacao->uuid }}">
+
+                    <i class="fas fa-undo text-danger mr-2"></i>
+                    Retirar Bike
+
+                </button>
+
+            @endif
+
+            <div class="dropdown-divider"></div>
+
+            <button type="button"
+                    class="dropdown-item"
+                    data-toggle="modal"
+                    data-target="#historicoModal{{ $locacao->id }}">
+
+                <i class="fas fa-history text-secondary mr-2"></i>
+                Histórico de Renovações
+
+            </button>
+
+        </div>
+
+    </div>
+
+</td>
 
                 </tr>
 
@@ -741,6 +764,127 @@
 
 </div>
 
+
+
+
+
+@php
+
+$planoAtual = $locacao->plano;
+
+$novaData =
+\Carbon\Carbon::parse(
+    $locacao->data_vencimento
+)->addDays(
+    $planoAtual->duracao_dias
+);
+
+@endphp
+<div class="modal fade"
+     id="renovarModal{{ $locacao->uuid }}"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <form action="{{ route('locacoes.renovar', $locacao->uuid) }}"
+              method="POST">
+
+            @csrf
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Renovar Locação
+
+                    </h5>
+
+                    <button type="button"
+                            class="close"
+                            data-dismiss="modal">
+
+                        <span>&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+
+                        <label>Plano</label>
+<select name="plano_id"
+        class="form-control plano-select" required>
+
+                            @foreach($planos as $plano)
+
+                            <option value="{{ $plano->id }}"
+        data-dias="{{ $plano->duracao_dias }}"
+        {{ $locacao->plano_id == $plano->id ? 'selected' : '' }}>
+
+    {{ $plano->nome }}
+    -
+    R$ {{ number_format($plano->valor, 2, ',', '.') }}
+
+</option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Novo vencimento</label>
+                        <input type="date"
+       name="data_vencimento"
+       class="form-control data-vencimento"
+       data-vencimento-original="{{ $locacao->data_vencimento }}"
+       value="{{ $novaData->format('Y-m-d') }}"
+       required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Observações</label>
+
+                        <textarea name="observacoes"
+                                  class="form-control"></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+                    <button class="btn btn-primary">
+
+                        Confirmar Renovação
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 @endforeach
 
 
@@ -768,4 +912,60 @@ $(function () {
 });
 </script>
 
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const selects =
+        document.querySelectorAll('.plano-select');
+
+    selects.forEach(function(select){
+
+        select.addEventListener('change', function(){
+
+            const option =
+                this.options[this.selectedIndex];
+
+            const dias =
+                parseInt(option.dataset.dias);
+
+            const modal =
+                this.closest('.modal');
+
+            const inputData =
+                modal.querySelector('.data-vencimento');
+
+            // pega vencimento ORIGINAL
+            const dataOriginal =
+                inputData.dataset.vencimentoOriginal;
+
+            const vencimento =
+                new Date(dataOriginal);
+
+            // soma dias do plano
+            vencimento.setDate(
+                vencimento.getDate() + dias
+            );
+
+            const ano =
+                vencimento.getFullYear();
+
+            const mes =
+                String(vencimento.getMonth() + 1)
+                .padStart(2, '0');
+
+            const dia =
+                String(vencimento.getDate())
+                .padStart(2, '0');
+
+            inputData.value =
+                `${ano}-${mes}-${dia}`;
+
+        });
+
+    });
+
+});
+
+</script>
 @stop

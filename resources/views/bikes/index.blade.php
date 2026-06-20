@@ -194,7 +194,7 @@
 {{-- =========================
     AÇÕES
 ========================= --}}
-<div class="actions-group section-block">
+<div class="section-block">
     <a href="{{ route('bikes.create') }}" class="btn btn-success">
         <i class="fas fa-plus"></i> Nova Bike
     </a>
@@ -266,40 +266,79 @@
                         @endif
                     </td>
 
-                    <td>
-<div class="d-flex flex-wrap align-items-center" style="gap:6px;">
-                        <a href="{{ route('bikes.show', $bike->uuid) }}"
-                           class="btn btn-info btn-sm">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                    
+<td class="text-center">
 
-                        <a href="{{ route('bikes.edit', $bike->uuid) }}"
-                           class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i>
-                        </a>
+    <div class="dropdown">
 
-                        @if($bike->status_patrimonial == 'ativa')
-                            <button class="btn btn-danger btn-sm btn-vender"
-                                    data-toggle="modal"
-                                    data-target="#modalVenderBike"
-                                    data-id="{{ $bike->uuid }}"
-                                    data-modelo="{{ $bike->modelo }}">
-                                Vender
-                            </button>
-                        @endif
+        <button class="btn btn-sm btn-light border shadow-sm"
+                type="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
 
-                        @if($bike->status == 'disponivel' && $bike->status_patrimonial == 'ativa')
-                            <button class="btn btn-primary btn-sm btn-alugar"
-                                    data-toggle="modal"
-                                    data-target="#modalAlugarBike"
-                                    data-id="{{ $bike->uuid }}"
-                                    data-modelo="{{ $bike->modelo }}">
-                                Alugar
-                            </button>
-                        @endif
+            <i class="fas fa-ellipsis-v"></i>
 
-</div>
-                    </td>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right">
+
+            <a class="dropdown-item"
+               href="{{ route('bikes.show', $bike->uuid) }}">
+
+                <i class="fas fa-eye text-info mr-2"></i>
+                Visualizar
+
+            </a>
+
+            <a class="dropdown-item"
+               href="{{ route('bikes.edit', $bike->uuid) }}">
+
+                <i class="fas fa-edit text-warning mr-2"></i>
+                Editar
+
+            </a>
+
+            @if($bike->status_patrimonial == 'ativa')
+
+                <div class="dropdown-divider"></div>
+
+                <button type="button"
+                        class="dropdown-item btn-vender"
+                        data-toggle="modal"
+                        data-target="#modalVenderBike"
+                        data-id="{{ $bike->uuid }}"
+                        data-modelo="{{ $bike->modelo }}">
+
+                    <i class="fas fa-dollar-sign text-danger mr-2"></i>
+                    Vender
+
+                </button>
+
+            @endif
+
+            @if($bike->status == 'disponivel' && $bike->status_patrimonial == 'ativa')
+
+                <button type="button"
+                        class="dropdown-item btn-alugar"
+                        data-toggle="modal"
+                        data-target="#modalAlugarBike"
+                        data-id="{{ $bike->uuid }}"
+                        data-modelo="{{ $bike->modelo }}">
+
+                    <i class="fas fa-bicycle text-primary mr-2"></i>
+                    Alugar
+
+                </button>
+
+            @endif
+
+        </div>
+
+    </div>
+
+</td>
+                    
 
                 </tr>
 

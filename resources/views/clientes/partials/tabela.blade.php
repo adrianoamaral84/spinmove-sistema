@@ -100,44 +100,62 @@
 
             <td class="text-center">
 
-                <div class="d-flex justify-content-center">
 
-                    <a href="{{ route('clientes.show', $cliente) }}"
-                       class="btn btn-info btn-sm mr-1"
-                       title="Visualizar">
 
-                        <i class="fas fa-eye"></i>
+            
+                
 
-                    </a>
+    <div class="dropdown">
 
-                    <a href="{{ route('clientes.edit', $cliente) }}"
-                       class="btn btn-warning btn-sm mr-1"
-                       title="Editar">
+       <button class="btn btn-sm btn-light border"
+        data-toggle="dropdown">
 
-                        <i class="fas fa-edit"></i>
+    <i class="fas fa-ellipsis-v"></i>
 
-                    </a>
+</button>
 
-                    <a href="https://wa.me/55{{ preg_replace('/[^0-9]/', '', $cliente->telefone) }}"
-                       target="_blank"
-                       class="btn btn-success btn-sm mr-1"
-                       title="WhatsApp">
+        <div class="dropdown-menu dropdown-menu-right">
 
-                        <i class="fab fa-whatsapp"></i>
+            <a class="dropdown-item"
+               href="{{ route('clientes.show', $cliente) }}">
 
-                    </a>
+                <i class="fas fa-eye mr-2 text-info"></i>
+                Visualizar
 
-                    <a href="{{ route('clientes.locacao.create',$cliente) }}?cliente={{ $cliente->uuid }}"
-                       class="btn btn-primary btn-sm"
-                       title="Nova Locação">
+            </a>
 
-                        <i class="fas fa-bicycle"></i>
+            <a class="dropdown-item"
+               href="{{ route('clientes.edit', $cliente) }}">
 
-                    </a>
+                <i class="fas fa-edit mr-2 text-warning"></i>
+                Editar
 
-                </div>
+            </a>
 
-            </td>
+            <a class="dropdown-item"
+               href="https://wa.me/55{{ preg_replace('/[^0-9]/', '', $cliente->telefone) }}"
+               target="_blank">
+
+                <i class="fab fa-whatsapp mr-2 text-success"></i>
+                WhatsApp
+
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a class="dropdown-item"
+               href="{{ route('clientes.locacao.create',$cliente) }}?cliente={{ $cliente->uuid }}">
+
+                <i class="fas fa-bicycle mr-2 text-primary"></i>
+                Nova Locação
+
+            </a>
+
+        </div>
+
+    </div>
+
+</td>
 
         </tr>
 

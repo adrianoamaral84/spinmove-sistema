@@ -49,6 +49,30 @@ use App\Support\HistoricoEventos;
         <i class="fas fa-exclamation-triangle text-danger"></i>
         @break
 
+    @case(HistoricoEventos::PAGAMENTO_REGISTRADO)
+        <i class="fas fa-dollar-sign text-primary"></i>
+        @break
+
+    @case(HistoricoEventos::LOCACAO_RENOVADA)
+        <i class="fas fa-sync-alt text-info"></i>
+        @break
+
+    @case(HistoricoEventos::LOCACAO_CRIADA)
+        <i class="fas fa-plus-circle text-success"></i>
+        @break
+
+    @case(HistoricoEventos::BIKE_DEVOLVIDA)
+        <i class="fas fa-undo text-warning"></i>
+        @break
+
+    @case(HistoricoEventos::BIKE_ENTREGUE)
+        <i class="fas fa-truck text-info"></i>
+        @break
+
+    @case(HistoricoEventos::RETIRADA_AGENDADA)
+        <i class="fas fa-calendar-alt text-info"></i>
+        @break
+
     @default
         <i class="fas fa-circle text-secondary"></i>
 
