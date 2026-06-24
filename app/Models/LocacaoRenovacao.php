@@ -17,7 +17,11 @@ class LocacaoRenovacao extends Model
 
         'nova_data',
 
-        'valor'
+        'valor',
+
+        'plano_id',
+
+        'plano_nome'
 
     ];
 
@@ -25,5 +29,10 @@ class LocacaoRenovacao extends Model
     {
         return $this->belongsTo(Locacao::class);
     }
+
+    public function plano()
+{
+    return $this->belongsTo(Plano::class);
+}
 }
 

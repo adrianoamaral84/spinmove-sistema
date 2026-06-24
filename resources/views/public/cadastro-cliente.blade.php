@@ -121,6 +121,10 @@ Preencha seu cadastro
 @endif
 <form method="POST" id="cadastroForm" action="{{ route('cadastro.publico.store') }}">
     @csrf
+<input type="hidden" name="fingerprint_id" id="fingerprint_id">
+<input type="hidden" name="user_agent" id="user_agent">
+<input type="hidden" name="screen_resolution" id="screen_resolution">
+<input type="hidden" name="timezone" id="timezone">
 
 <div class="card">
 
@@ -176,12 +180,21 @@ CPF
 </label>
 
 <input
-id="cpf"
-name="cpf"
-class="form-control"
-value="{{ old('cpf') }}"
-required
-maxlength="14">
+    id="cpf"
+    name="cpf"
+    class="form-control @error('cpf') is-invalid @enderror"
+    value="{{ old('cpf') }}"
+    required>
+
+@error('cpf')
+
+<div class="invalid-feedback">
+
+    {{ $message }}
+
+</div>
+
+@enderror
 
 </div>
 
@@ -247,37 +260,81 @@ Endereço
 
 <div class="row">
 
-<div class="col-md-8 mb-3">
+    <div class="col-md-3 mb-3">
 
-<label>
+        <label>CEP</label>
 
-Endereço
+        <input
+            id="cep"
+            name="cep"
+            class="form-control"
+            value="{{ old('cep') }}"
+            required>
 
-</label>
+    </div>
 
-<input
-name="endereco"
-class="form-control"
-value="{{ old('endereco') }}"
-required>
+    <div class="col-md-6 mb-3">
+
+        <label>Endereço</label>
+
+        <input
+            id="endereco"
+            name="endereco"
+            class="form-control"
+            value="{{ old('endereco') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <label>Número</label>
+
+        <input
+            name="numero"
+            class="form-control"
+            value="{{ old('numero') }}"
+            required>
+
+    </div>
 
 </div>
 
-<div class="col-md-4 mb-3">
+<div class="row">
 
-<label>
+    <div class="col-md-4 mb-3">
 
-Bairro
+        <label>Bairro</label>
 
-</label>
+        <input
+            id="bairro"
+            name="bairro"
+            class="form-control"
+            value="{{ old('bairro') }}"
+            required>
 
-<input
-name="bairro"
-class="form-control"
-value="{{ old('bairro') }}"
-required>
+    </div>
 
-</div>
+    <div class="col-md-4 mb-3">
+
+        <label>Cidade</label>
+
+        <input
+            id="cidade"
+            name="cidade"
+            class="form-control"
+            value="{{ old('cidade') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <label>Estado</label>
+
+        <input id="estado" name="estado" class="form-control" value="{{ old('estado') }}" readonly>
+
+    </div>
 
 </div>
 
@@ -772,7 +829,22 @@ Fechar
 
 
 
+<script>
+    const cep = document.getElementById('cep');
 
+cep.addEventListener('input', function(e){
+
+    let value = e.target.value.replace(/\D/g,'');
+
+    value = value.replace(
+        /^(\d{5})(\d)/,
+        '$1-$2'
+    );
+
+    e.target.value = value;
+
+});
+    </script>
 <script>
 
 const aceite =
@@ -937,6 +1009,72 @@ return false;
 );
 
 </script>
+<script>
+
+document.getElementById('cep')
+.addEventListener('input', function(e){
+
+    let value = e.target.value
+        .replace(/\D/g,'');
+
+    value = value.replace(
+        /^(\d{5})(\d)/,
+        '$1-$2'
+    );
+
+    e.target.value = value;
+
+});
+
+</script>
+<script>
+
+document.getElementById('cep')
+.addEventListener('blur', function(){
+
+    let cep = this.value.replace(/\D/g,'');
+
+    if(cep.length !== 8){
+        return;
+    }
+
+    fetch(
+        `https://viacep.com.br/ws/${cep}/json/`
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if(data.erro){
+
+            alert('CEP não encontrado.');
+
+            return;
+        }
+
+        document.getElementById('endereco')
+            .value = data.logradouro || '';
+
+        document.getElementById('bairro')
+            .value = data.bairro || '';
+
+        document.getElementById('cidade')
+            .value = data.localidade || '';
+
+        document.getElementById('estado')
+            .value = data.uf || '';
+
+    })
+    .catch(() => {
+
+        alert(
+            'Erro ao consultar o CEP.'
+        );
+
+    });
+
+});
+
+</script>
 </body>
 <script>
 
@@ -993,5 +1131,29 @@ card.classList.add(
 
 }
 
+</script>
+<script>
+document.getElementById('user_agent').value =
+    navigator.userAgent;
+
+document.getElementById('screen_resolution').value =
+    window.screen.width + 'x' + window.screen.height;
+
+document.getElementById('timezone').value =
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
+</script>
+<script src="https://openfpcdn.io/fingerprintjs/v4"></script>
+
+<script>
+(async () => {
+
+    const fp = await FingerprintJS.load();
+
+    const result = await fp.get();
+
+    document.getElementById('fingerprint_id').value =
+        result.visitorId;
+
+})();
 </script>
 </html>

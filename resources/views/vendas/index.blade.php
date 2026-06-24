@@ -3,38 +3,78 @@
 @section('title', 'Vendas')
 
 @section('content_header')
-    <h1>Histórico de Vendas</h1>
+
+<div class="section-block">
+
+    <div class="d-flex align-items-center">
+
+        
+
+        <h3 class="mb-0">
+            Histórico de Vendas
+        </h3>
+
+    </div>
+
+    <small class="text-muted">
+        Todas as bikes vendidas pela SpinMove, com informações do cliente, valor da venda e data da negociação.
+    </small>
+
+</div>
+
 @stop
 
 @section('content')
 
 <div class="card">
 
-    <div class="card-body">
+    <div class="card-body p-0">
 
-        <table class="table table-bordered table-hover">
+        <div class="p-3">
 
-            <thead>
+            <div class="d-flex align-items-center">
 
-                <tr>
-                    <th>Bike</th>
-                    <th>Marca</th>
-                    <th>Cliente</th>
-                    <th>Valor</th>
-                    <th>Data</th>
-                    <th>Observações</th>
-                </tr>
+                <i class="fas fa-chart-line text-primary mr-2"></i>
 
-            </thead>
+                <h5 class="mb-0">
+                    Vendas Registradas
+                </h5>
 
-            <tbody>
+            </div>
 
-                @forelse($vendas as $venda)
+            <small class="text-muted">
+                Histórico completo das vendas realizadas
+            </small>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                    <tr>
+                        <th>Bike</th>
+                        <th>Marca</th>
+                        <th>Cliente</th>
+                        <th>Valor</th>
+                        <th>Data</th>
+                        <th>Observações</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($vendas as $venda)
 
                     <tr>
 
                         <td>
-                            {{ $venda->bike->modelo }}
+                            <strong>
+                                {{ $venda->bike->modelo }}
+                            </strong>
                         </td>
 
                         <td>
@@ -46,7 +86,13 @@
                         </td>
 
                         <td>
-                            R$ {{ number_format($venda->valor, 2, ',', '.') }}
+
+                            <span class="font-weight-bold text-success">
+
+                                R$ {{ number_format($venda->valor, 2, ',', '.') }}
+
+                            </span>
+
                         </td>
 
                         <td>
@@ -54,24 +100,38 @@
                         </td>
 
                         <td>
-                            {{ $venda->observacoes ?? '-' }}
+
+                            <small class="text-muted">
+
+                                {{ Str::limit($venda->observacoes, 40) }}
+
+                            </small>
+
                         </td>
 
                     </tr>
 
-                @empty
+                    @empty
 
                     <tr>
-                        <td colspan="6" class="text-center">
+
+                        <td colspan="6" class="text-center py-5 text-muted">
+
+                            <i class="fas fa-shopping-cart fa-2x mb-3 d-block"></i>
+
                             Nenhuma venda encontrada.
+
                         </td>
+
                     </tr>
 
-                @endforelse
+                    @endforelse
 
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
+
+        </div>
 
     </div>
 

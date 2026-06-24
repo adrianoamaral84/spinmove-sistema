@@ -16,11 +16,15 @@ class UpdateClienteRequest extends FormRequest
         $clienteId = $this->route('cliente')->id;
 
         return [
-             'nome' => 'required|string|max:255',
+
+
+         'nome' => 'required|string|max:255',
             'telefone' => 'required|string|min:10|max:11',
-'cpf' => 'required|string|size:11|unique:clientes,cpf,' . $clienteId,            'endereco' => 'required|string|max:255',
+            'cpf' => 'required|string|size:11|unique:clientes,cpf,' . $clienteId,
+            'endereco' => 'required|string|max:255',
             'bairro' => 'required|string|max:255',
-'email' => 'required|email|unique:clientes,email,' . $clienteId,            'profissao' => 'required|string|max:255',
+            'email' => 'required|email|unique:clientes,email,' . $clienteId,
+            'profissao' => 'required|string|max:255',
             'estado_civil' => 'required|string|max:255',
             'altura' => 'required|numeric|min:1|max:2.5',
             'origem' => 'required|string|max:255',
@@ -28,6 +32,10 @@ class UpdateClienteRequest extends FormRequest
             'status' => 'nullable',
 'observacoes' => 'nullable',
 'data_nascimento' => 'nullable|date',
+'numero' => 'nullable|string|max:20',
+'cidade' => 'required|string|max:100',
+'cep' => 'required|string|size:8',
+'estado' => 'nullable|string|size:2',
         ];
     }
 

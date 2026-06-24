@@ -13,6 +13,10 @@ use App\Models\Conversa;
 use App\Models\Mensagem;
 use App\Models\Notification;
 use App\Services\ClienteService;
+use App\Models\ClienteHistorico;
+use App\Services\HistoricoService;  
+use Illuminate\Validation\ValidationException; 
+
 
 class ClienteController extends Controller
 {
@@ -263,8 +267,31 @@ now()->subDays(7)
      */
    public function store(StoreClienteRequest $request, ClienteService $service)
 {
-    dd("form privado");
-    $cliente = $service->criar($request->validated());
+    
+try {
+
+    $cliente = $service->criar(
+        $request->validated()
+    );
+
+} catch (\Exception $e) {
+
+    return back()
+        ->withInput()
+        ->withErrors([
+            'cpf' => $e->getMessage()
+        ]);
+
+}
+    
+    
+
+   
+    HistoricoService::registrar(
+    $cliente->id,
+    HistoricoEventos::CADASTRO_REALIZADO,
+    'Cadastro enviado pelo formulário interno'
+);
 
     return redirect()
         ->route('clientes.index')
@@ -277,7 +304,89 @@ now()->subDays(7)
      */
     public function show(Cliente $cliente)
 {
-    return view('clientes.show', compact('cliente'));
+
+$locacaoAtiva = $cliente->locacoes()
+    ->where('status', 'ativa')
+    ->latest()
+    ->first();
+
+$bikeAtual = $locacaoAtiva?->bike?->marca ?? '-';
+
+$vencimento = $locacaoAtiva?->data_fim;
+
+$diasAtraso = 0;
+
+if ($vencimento && now()->gt($vencimento)) {
+    $diasAtraso = now()->diffInDays($vencimento);
+}
+
+$valorPendente = $cliente->locacoes
+    ->sum(function ($locacao) {
+        return max(
+            0,
+            ($locacao->valor_total ?? 0)
+            - ($locacao->pagamentos->sum('valor') ?? 0)
+        );
+    });
+
+    $alertas = [];
+
+if ($valorPendente > 0) {
+
+    $alertas[] = [
+        'tipo' => 'danger',
+        'texto' => 'Cliente possui R$ '
+            . number_format($valorPendente,2,',','.')
+            . ' em aberto'
+    ];
+}
+
+if ($diasAtraso > 0) {
+
+    $alertas[] = [
+        'tipo' => 'danger',
+        'texto' => 'Pagamento atrasado há '
+            . $diasAtraso
+            . ' dias'
+    ];
+}
+
+if ($vencimento) {
+
+    $diasParaVencer =
+        now()->diffInDays(
+            $vencimento,
+            false
+        );
+
+    if (
+        $diasParaVencer >= 0 &&
+        $diasParaVencer <= 7
+    ) {
+
+        $alertas[] = [
+            'tipo' => 'warning',
+            'texto' => 'Contrato vence em '
+                . $diasParaVencer
+                . ' dias'
+        ];
+    }
+}
+
+    return view(
+    'clientes.show',
+    compact(
+        'cliente',
+        'alertas',
+        'bikeAtual',
+        'vencimento',
+        'valorPendente',
+        'diasAtraso',
+        'locacaoAtiva'
+            )
+);
+    
+
 }
 
     /**
@@ -308,11 +417,18 @@ date_default_timezone_set('America/Sao_Paulo');
             ->addDays($plano->duracao_dias)
             ->format('Y-m-d');
     }
+   
 
     //dd($cliente->getDirty());
 
 $cliente->update($data);
 
+
+ HistoricoService::registrar(
+    $cliente->id,
+    HistoricoEventos::CLIENTE_ATUALIZADO,
+    'Cliente atualizado com sucesso'
+);
     return redirect()->route('clientes.index')
         ->with('success', 'Cliente atualizado com sucesso!');
 }
@@ -323,7 +439,12 @@ $cliente->update($data);
    public function destroy(Cliente $cliente)
 {
     $cliente->delete();
-
+    
+    HistoricoService::registrar(
+    $cliente->id,
+    HistoricoEventos::CLIENTE_EXCLUIDO,
+    'Cliente excluído do sistema'
+);
     return redirect()->route('clientes.index')
         ->with('success', 'Cliente excluído com sucesso!');
 }
@@ -366,7 +487,11 @@ date_default_timezone_set('America/Sao_Paulo');
         ->addDays($cliente->plano->duracao_dias);
     
         $cliente->save();
-
+ HistoricoService::registrar(
+    $cliente->id,
+    HistoricoEventos::BIKE_ENTREGUE,
+    'Entrega realizada por '.auth()->user()->name
+);
     return back()->with('success', 'Bike entregue com sucesso!');
 }
 

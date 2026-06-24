@@ -4,12 +4,15 @@
 
 @section('content_header')
 
-<div class="d-flex justify-content-between">
+@section('content_header')
+<div class="mb-4">
+    <h1 class="mb-1">Novo Cliente</h1>
 
-    <h1>Novo Cliente</h1>
-
+    <small class="text-muted">
+        Cadastro de novo cliente SpinMove
+    </small>
 </div>
-
+@stop
 @stop
 
 @section('content')
@@ -21,13 +24,15 @@
 
 <div class="card">
 
-<div class="card-header">
+<div class="card-header spinmove-header">
 
-<h3 class="card-title">
+    <h3 class="card-title mb-0">
 
-Dados do Cliente
+        <i class="fas fa-user-plus mr-2"></i>
 
-</h3>
+        Dados do Cliente
+
+    </h3>
 
 </div>
 
@@ -35,10 +40,9 @@ Dados do Cliente
 
 <!-- DADOS PESSOAIS -->
 
-<h5 class="mb-3">
-
-Dados Pessoais
-
+<h5 class="mb-4 border-bottom pb-2">
+    <i class="fas fa-user text-orange mr-2"></i>
+    Dados Pessoais
 </h5>
 
 <div class="row">
@@ -159,35 +163,93 @@ class="form-control"
 
 <!-- ENDEREÇO -->
 
-<h5 class="mb-3">
-
-Endereço
-
+<h5 class="mb-4 border-bottom pb-2">
+    <i class="fas fa-map-marker-alt text-orange mr-2"></i>
+    Endereço
 </h5>
 
 <div class="row">
 
-<div class="col-md-6 mb-3">
+    <div class="col-md-3 mb-3">
 
-<label>Endereço</label>
+        <label>CEP</label>
 
-<input
-name="endereco"
-class="form-control"
->
+        <input
+            id="cep"
+            name="cep"
+            class="form-control"
+            value="{{ old('cep') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-6 mb-3">
+
+        <label>Endereço</label>
+
+        <input
+            id="endereco"
+            name="endereco"
+            class="form-control"
+            value="{{ old('endereco') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <label>Número</label>
+
+        <input
+            name="numero"
+            class="form-control"
+            value="{{ old('numero') }}"
+            required>
+
+    </div>
 
 </div>
 
-<div class="col-md-6 mb-3">
+<div class="row">
 
-<label>Bairro</label>
+    <div class="col-md-4 mb-3">
 
-<input
-name="bairro"
-class="form-control"
->
+        <label>Bairro</label>
 
-</div>
+        <input
+            id="bairro"
+            name="bairro"
+            class="form-control"
+            value="{{ old('bairro') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <label>Cidade</label>
+
+        <input
+            id="cidade"
+            name="cidade"
+            class="form-control"
+            value="{{ old('cidade') }}"
+            required>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <label>Estado</label>
+
+        <input
+            id="estado"
+            name="estado"
+            class="form-control"
+            value="{{ old('estado') }}"
+            readonly>
+
+    </div>
 
 </div>
 
@@ -196,10 +258,9 @@ class="form-control"
 
 <!-- PERFIL -->
 
-<h5 class="mb-3">
-
-Perfil
-
+<h5 class="mb-4 border-bottom pb-2">
+    <i class="fas fa-id-card text-orange mr-2"></i>
+    Perfil
 </h5>
 
 <div class="row">
@@ -248,14 +309,50 @@ Viúvo(a)
 
 <label>
 
-Onde nos conheceu
+Como conheceu a SpinMove?
 
 </label>
 
-<input
+<select
 name="origem"
 class="form-control"
->
+required>
+
+<option value="">
+Selecione
+</option>
+
+<option value="Instagram"
+{{ old('origem')=='Instagram' ? 'selected':'' }}>
+Instagram
+</option>
+
+<option value="Indicação"
+{{ old('origem')=='Indicação' ? 'selected':'' }}>
+Indicação
+</option>
+
+<option value="Google"
+{{ old('origem')=='Google' ? 'selected':'' }}>
+Google
+</option>
+
+<option value="Facebook"
+{{ old('origem')=='Facebook' ? 'selected':'' }}>
+Facebook
+</option>
+
+<option value="Passando na rua"
+{{ old('origem')=='Passando na rua' ? 'selected':'' }}>
+Passando na rua
+</option>
+
+<option value="Outro"
+{{ old('origem')=='Outro' ? 'selected':'' }}>
+Outro
+</option>
+
+</select>
 
 </div>
 
@@ -266,10 +363,9 @@ class="form-control"
 
 <!-- COMERCIAL -->
 
-<h5 class="mb-3">
-
-Comercial
-
+<h5 class="mb-4 border-bottom pb-2">
+    <i class="fas fa-briefcase text-orange mr-2"></i>
+    Comercial
 </h5>
 
 <div class="row">
@@ -301,12 +397,7 @@ value="{{ $plano->id }}"
 
 R$
 
-{{ number_format(
-$plano->valor,
-2,
-',',
-'.'
-) }}
+{{ number_format($plano->valor,2,',','.') }}
 
 </option>
 
@@ -358,10 +449,9 @@ Bloqueado
 
 <!-- OBSERVAÇÕES -->
 
-<h5 class="mb-3">
-
-Observações
-
+<h5 class="mb-4 border-bottom pb-2">
+    <i class="fas fa-sticky-note text-orange mr-2"></i>
+    Observações
 </h5>
 
 <div class="form-group">
@@ -381,19 +471,17 @@ class="form-control"
 
 <a
 href="{{ route('clientes.index') }}"
-class="btn btn-primary"
+class="btn btn-light border"
 >
-
-Cancelar
-
+<i class="fas fa-arrow-left mr-1"></i>
+Voltar
 </a>
 
 <button
 class="btn btn-success"
 >
-
-Salvar
-
+<i class="fas fa-save mr-1"></i>
+Salvar Cliente
 </button>
 
 </div>
@@ -408,7 +496,72 @@ Salvar
 
 
 @section('js')
+<script>
 
+document.getElementById('cep')
+.addEventListener('input', function(e){
+
+    let value = e.target.value
+        .replace(/\D/g,'');
+
+    value = value.replace(
+        /^(\d{5})(\d)/,
+        '$1-$2'
+    );
+
+    e.target.value = value;
+
+});
+
+</script>
+<script>
+
+document.getElementById('cep')
+.addEventListener('blur', function(){
+
+    let cep = this.value.replace(/\D/g,'');
+
+    if(cep.length !== 8){
+        return;
+    }
+
+    fetch(
+        `https://viacep.com.br/ws/${cep}/json/`
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if(data.erro){
+
+            alert('CEP não encontrado.');
+
+            return;
+        }
+
+        document.getElementById('endereco')
+            .value = data.logradouro || '';
+
+        document.getElementById('bairro')
+            .value = data.bairro || '';
+
+        document.getElementById('cidade')
+            .value = data.localidade || '';
+
+        document.getElementById('estado')
+            .value = data.uf || '';
+
+    })
+    .catch(() => {
+
+        alert(
+            'Erro ao consultar o CEP.'
+        );
+
+    });
+
+});
+
+</script>
 <script>
 
 // CPF

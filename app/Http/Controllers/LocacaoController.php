@@ -9,6 +9,8 @@ use App\Models\Plano;
 use App\Models\Cliente;
 use App\Models\LocacaoRenovacao;
 use App\Models\Pagamento;
+use App\Services\HistoricoService;
+use Carbon\Carbon;
 
 class LocacaoController extends Controller
 {
@@ -22,6 +24,8 @@ date_default_timezone_set('America/Sao_Paulo');
         ->update([
             'status' => 'atrasada'
         ]);
+
+    $planos = Plano::all();
 
     $locacoes = Locacao::with([
     'cliente',
@@ -46,34 +50,91 @@ date_default_timezone_set('America/Sao_Paulo');
         'ativa',
         'atrasada'
     ])->sum('valor_mensal');
+$bikesDisponiveis = Bike::where('status','disponivel')
+    ->get();
 
+    
     return view('locacoes.index', compact(
         'locacoes',
         'locacoesAtivas',
         'locacoesAtrasadas',
         'vencemHoje',
-        'receitaMensal'
+        'receitaMensal',
+        'planos',
+        'bikesDisponiveis'
     ));
 }
 
 
 public function show($id)
 {
-    
     date_default_timezone_set('America/Sao_Paulo');
-   
+
     $locacao = Locacao::with([
-    'cliente',
-    'bike',
-    'plano',
-    'renovacoes',
-])->where('uuid', $id)
-  ->firstOrFail();
-$planos = Plano::all();
-    return view(
-        'locacoes.show',
-        compact('locacao','planos')
-    );
+        'cliente',
+        'bike',
+        'plano',
+        'renovacoes',
+        'pagamentos'
+    ])
+    ->where('uuid', $id)
+    ->firstOrFail();
+
+    $planos = Plano::all();
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOTAL PAGO (mais simples e rápido)
+    |--------------------------------------------------------------------------
+    */
+    $totalPago = $locacao->pagamentos
+        ->where('tipo', 'pagamento')
+        ->sum('valor');
+
+    /*
+    |--------------------------------------------------------------------------
+    | COBRANÇAS
+    |--------------------------------------------------------------------------
+    */
+    $cobrancas = $locacao->pagamentos
+        ->where('tipo', 'cobranca');
+
+    /*
+    |--------------------------------------------------------------------------
+    | SALDO PENDENTE
+    |--------------------------------------------------------------------------
+    */
+    $saldoPendente = 0;
+
+    foreach ($cobrancas as $cobranca) {
+
+        $pagoDaCobranca = $locacao->pagamentos
+            ->where('tipo', 'pagamento')
+            ->where('cobranca_id', $cobranca->id)
+            ->sum('valor');
+
+        $saldo = $cobranca->valor - $pagoDaCobranca;
+
+        if ($saldo > 0) {
+            $saldoPendente += $saldo;
+        }
+    }
+
+$eventos = $locacao->eventos()
+    ->latest()
+    ->get();
+
+$bikesDisponiveis = Bike::where('status','disponivel')->get();
+
+    return view('locacoes.show', compact(
+        'locacao',
+        'planos',
+        'totalPago',
+        'saldoPendente',
+        'cobrancas',
+        'eventos',
+        'bikesDisponiveis'
+    ));
 }
 
 
@@ -82,8 +143,10 @@ $planos = Plano::all();
     date_default_timezone_set('America/Sao_Paulo');
     $bike = Bike::findOrFail($request->bike_id);
     $plano = Plano::findOrFail($request->plano_id);
+
+
     // Cria locação
-    Locacao::create([
+    $locacao = Locacao::create([
 
     'bike_id' => $bike->id,
 
@@ -93,22 +156,30 @@ $planos = Plano::all();
 
     'valor_mensal' => $valor_mensal = $plano->valor,
 
-   
     'status' => 'aguardando_entrega',
 
     'observacoes' => $request->observacoes,
 
 ]);
 
-
+HistoricoService::registrar(
+    $request->cliente_id,
+    'Locação criada',
+    'Bike #'.$bike->id.' '.$bike->marca.' vinculada ao cliente'
+);
+$this->registrarEvento(
+    $locacao,
+    'Locação criada',
+    'Locação criada',
+    'Bike #'.$bike->id.' '.$bike->marca.' vinculada ao cliente'
+);
 
     // Atualiza bike
     $bike->status = 'reservada';
 
     $bike->save();
+return redirect()->route('locacoes.index')->with('success', 'Locação criada com sucesso!');
 
-    return redirect()->back()
-        ->with('success', 'Bike alugada com sucesso!');
 }
 
     public function devolver(Locacao $locacao)
@@ -125,6 +196,17 @@ $planos = Plano::all();
     $bike->status = 'disponivel';
 
     $bike->save();
+HistoricoService::registrar(
+    $locacao->cliente_id,
+'Bike devolvida',
+    'Bike #'.$bike->id.' '.$bike->marca.' devolvida pelo cliente'
+);
+$this->registrarEvento(
+    $locacao,
+    'Bike devolvida',
+    'Bike devolvida',
+    'Bike #'.$bike->id.' '.$bike->marca.' devolvida pelo cliente'
+);
 
     return redirect()->back()
         ->with('success', 'Bike devolvida com sucesso!');
@@ -166,7 +248,7 @@ public function renovar(Request $request, Locacao $locacao)
     $dataAnterior = $locacao->data_vencimento;
 
     // salva histórico
-    
+
     LocacaoRenovacao::create([
 
         'locacao_id' => $locacao->id,
@@ -176,6 +258,10 @@ public function renovar(Request $request, Locacao $locacao)
         'nova_data' => $request->data_vencimento,
 
         'valor' => $plano->valor,
+
+        'plano_id' => $request->plano_id,
+
+        'plano_nome' => $plano->nome ?? null
 
     ]);
     Pagamento::create([
@@ -214,6 +300,17 @@ public function renovar(Request $request, Locacao $locacao)
 
     ]);
 
+    HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Locação renovada',
+'Locação renovada para o plano '.$plano->nome.' com vencimento em '.Carbon::parse($request->data_vencimento)->format('d/m/Y')
+);
+    $this->registrarEvento(
+        $locacao,
+        'Locação renovada',
+        'Locação renovada',
+        'Locação renovada para o plano '.$plano->nome.' com vencimento em '.Carbon::parse($request->data_vencimento)->format('d/m/Y')
+    );
     return redirect()
         ->back()
         ->with('success', 'Locação renovada com sucesso!');
@@ -277,6 +374,36 @@ public function entregar(Locacao $locacao)
         ]);
 
     }
+
+
+    
+HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Bike entregue',
+    'Bike #'.$locacao->bike->id.' '.$locacao->bike->marca.' entregue ao cliente'
+);
+
+HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Plano ativado',
+    'Plano '. $locacao->plano->nome .' ativado para a locação da bike #'.$locacao->bike->id.' '.$locacao->bike->marca
+);
+
+$this->registrarEvento(
+    $locacao,
+    'Bike entregue',
+    'Bike entregue',
+    'Bike #'.$locacao->bike->id.' '.$locacao->bike->marca.' entregue ao cliente'
+);
+
+$this->registrarEvento(
+    $locacao,
+    'Plano ativado',
+    'Plano ativado',
+    'Plano '. $locacao->plano->nome .' ativado para a locação da bike #'.$locacao->bike->id.' '.$locacao->bike->marca
+);
+
+
 
     return redirect()
         ->back()
@@ -374,6 +501,17 @@ public function registrarPagamento(
 
     }
 
+    HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Pagamento registrado',
+    'Pagamento de R$ '.$request->valor.' registrado para a locação'
+    );
+$this->registrarEvento(
+    $locacao,
+    'Pagamento registrado',
+    'Pagamento registrado',
+    'Pagamento de R$ '.$request->valor.' registrado para a locação'
+);
 
     return back()->with(
         'success',
@@ -382,10 +520,7 @@ public function registrarPagamento(
 
 }
 
-public function agendarRetirada(
-Request $request,
-Locacao $locacao
-)
+public function agendarRetirada(Request $request, Locacao $locacao)
 {
 
     $locacao->update([
@@ -400,23 +535,23 @@ Locacao $locacao
 
     ]);
 
+HistoricoService::registrar(
+    $locacao->cliente_id,
+'Retirada agendada',
+    'Aguardado para retirada da bike'
+);
+$this->registrarEvento(
+    $locacao,
+    'Retirada agendada',
+    'Retirada agendada',
+    'Aguardado para retirada da bike'
+);
 
-    return back()
-
-    ->with(
-
-        'success',
-
-        'Retirada agendada'
-
-    );
+    return back()->with('success','Retirada agendada');
 
 }
 
-public function finalizarRetirada(
-    Request $request,
-    Locacao $locacao
-)
+public function finalizarRetirada(Request $request, Locacao $locacao)
 {
 
     $locacao->update([
@@ -430,17 +565,7 @@ public function finalizarRetirada(
     ]);
 
 
-    $locacao
-        ->bike
-        ->update([
-
-            'status'
-
-            =>
-
-            'disponivel'
-
-        ]);
+    $locacao->bike->update(['status'=>'disponivel']);
 
 
     if ($request->multa > 0) {
@@ -479,6 +604,18 @@ public function finalizarRetirada(
 
     }
 
+    
+HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Bike retirada',
+    'Retirada finalizada'
+);
+$this->registrarEvento(
+    $locacao,
+    'Bike retirada',
+    'Bike retirada',
+    'Retirada finalizada'
+);
 
     return back()
 
@@ -523,4 +660,84 @@ Cliente $cliente
 
 }
 
+
+public function edit($uuid)
+{
+    $locacao = Locacao::where('uuid', $uuid)->firstOrFail();
+
+    $clientes = Cliente::all();
+    $bikes = Bike::all();
+    $planos = Plano::all();
+
+    return view('locacoes.edit', compact('locacao', 'clientes', 'bikes', 'planos'));
 }
+public function update(Request $request, $uuid)
+{
+    $locacao = Locacao::where('uuid', $uuid)->firstOrFail();
+
+    $locacao->update($request->all());
+
+HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Locação atualizada',
+    'Locação atualizada com sucesso!'
+);
+    return redirect()
+        ->route('locacoes.index')
+        ->with('success', 'Locação atualizada com sucesso!');
+
+
+        }
+
+
+    private function registrarEvento(
+    $locacao,
+    string $tipo,
+    string $titulo,
+    ?string $descricao = null
+)
+{
+    \App\Models\LocacaoEvento::create([
+        'locacao_id' => $locacao->id,
+        'tipo'       => $tipo,
+        'titulo'     => $titulo,
+        'descricao'  => $descricao,
+    ]);
+}
+
+public function trocarBike(Request $request, Locacao $locacao)
+{
+
+    $request->validate([
+        'bike_id' => 'required|exists:bikes,id'
+    ]);
+
+
+    $bikeAntiga = $locacao->bike->nome ?? 'Sem bike';
+
+
+    $locacao->update([
+        'bike_id' => $request->bike_id
+    ]);
+
+
+    $novaBike = Bike::find($request->bike_id);
+
+
+  
+    $this->registrarEvento(
+    $locacao,
+    'Troca de bike',
+    'Troca de bike',
+    'Bike alterada de '.$bikeAntiga. ' para '.$novaBike->nome
+);
+
+
+    return back()->with(
+        'success',
+        'Bike trocada com sucesso!'
+    );
+
+}
+}
+

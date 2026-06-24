@@ -21,4 +21,10 @@ public function getValorMensalAttribute()
         ? ($this->valor / $this->duracao_dias) * 30
         : 0;
 }
+
+public function setNomeAttribute($value)
+{
+    $this->attributes['nome'] =
+        Str::title(mb_strtolower(trim($value)));
+}
 }

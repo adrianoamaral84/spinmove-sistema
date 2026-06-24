@@ -18,7 +18,7 @@ class NotificationController extends Controller
 
     ->update([
 
-        'lida'=>1
+        'lida'=>0
 
     ]);
 

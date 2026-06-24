@@ -6,6 +6,9 @@ use App\Models\Bike;
 use Illuminate\Http\Request;
 use App\Models\Venda;
 use App\Models\Locacao;
+   
+use App\Services\BikeHistoricoService;
+use App\Support\BikeHistoricoEventos;
 
 class BikeController extends Controller
 {
@@ -126,6 +129,7 @@ compact(
 {
     $ultimaBike = Bike::latest()->first();
 
+
     $numero = 1;
 
     if ($ultimaBike) {
@@ -139,7 +143,7 @@ compact(
 
     $codigo = 'BK-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
 
-    Bike::create([
+    $bike = Bike::create([
 
         'codigo' => $codigo,
 
@@ -158,7 +162,12 @@ compact(
         
 
     ]);
+    
 
+BikeHistoricoService::registrar(
+    $bike->id,
+    BikeHistoricoEventos::CADASTRADA
+);
     return redirect()
         ->route('bikes.index')
         ->with('success', 'Bike cadastrada com sucesso!');
@@ -166,26 +175,73 @@ compact(
     /**
      * Display the specified resource.
      */
-    public function show(Bike $bike)
+ public function show(Bike $bike)
 {
+    $bike->load([
+        'locacoes.pagamentos',
+        'locacoes.cliente'
+    ]);
+$clienteAtual = $bike->locacoes()
+    ->where('status', 'ativa')
+    ->with('cliente')
+    ->latest()
+    ->first();
+$diasLocada = 0;
 
-    $locacoes = $bike
-        ->locacoes()
+if ($clienteAtual) {
+
+    $diasLocada = \Carbon\Carbon::parse(
+        $clienteAtual->data_inicio
+    )->diffInDays(now());
+}
+    $totalLocacoes = $bike->locacoes->count();
+
+    $ultimaLocacao = $bike->locacoes
+        ->sortByDesc('data_inicio')
+        ->first();
+
+    $totalReceita = $bike->locacoes
+        ->sum(function ($locacao) {
+            return $locacao->pagamentos->sum('valor');
+        });
+
+    $retorno =
+        $totalReceita -
+        ($bike->valor_compra ?? 0);
+
+    $locacoes = $bike->locacoes()
         ->with('cliente')
         ->latest()
         ->get();
+$roi = 0;
+
+if (($bike->valor_compra ?? 0) > 0) {
+
+    $roi = (
+        ($totalReceita - $bike->valor_compra)
+        / $bike->valor_compra
+    ) * 100;
+}
+
+$lucroLiquido =
+    $totalReceita -
+    ($bike->valor_compra ?? 0);
 
     return view(
-
         'bikes.show',
-
         compact(
             'bike',
-            'locacoes'
+            'totalLocacoes',
+            'ultimaLocacao',
+            'totalReceita',
+            'retorno',
+            'locacoes',
+            'clienteAtual',
+            'diasLocada',
+            'roi',
+            'lucroLiquido'
         )
-
     );
-
 }
 
     /**

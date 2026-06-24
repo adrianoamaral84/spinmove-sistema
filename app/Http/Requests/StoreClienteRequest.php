@@ -28,6 +28,11 @@ class StoreClienteRequest extends FormRequest
             'status' => 'nullable',
 'observacoes' => 'nullable',
 'data_nascimento' => 'nullable|date',
+'numero' => 'nullable|string|max:20',
+'cidade' => 'required|string|max:100',
+'cep' => 'required|string|size:8',
+'estado' => 'nullable|string|size:2',
+
         ];
     }
 
@@ -50,6 +55,11 @@ class StoreClienteRequest extends FormRequest
             'origem.required' => 'Campo obrigatório',
             'plano.required' => 'Campo obrigatório',
             'email.required' => 'Campo obrigatório',
+            'numero.required' => 'O número é obrigatório',
+            'numero.max' => 'O número não pode exceder 20 caracteres',
+            'cidade.required' => 'A cidade é obrigatória',
+            'cep.required' => 'O CEP é obrigatório',
+            
         ];
     }
 

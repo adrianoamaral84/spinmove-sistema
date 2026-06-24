@@ -1,398 +1,361 @@
 @extends('adminlte::page')
 
 @section('title', 'Bikes')
-
+@section('css')
+<link rel="stylesheet" href="{{ asset('spinmove/css/spinmove.css') }}">
+@stop
 @section('content_header')
-    <h1>Bikes</h1>
+<div class="mb-4">
+    <h1 class="mb-1">Bikes</h1>
+
+    <small class="text-muted">
+        Gerencie toda a frota de bikes da SpinMove
+    </small>
+</div>
 @stop
 
+
 @section('content')
+
+
+     <div class="section-block">
+    <div class="row">
+
+        {{-- TOTAL --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-gray">
+                        <i class="fas fa-bicycle"></i>
+                    </div>
+
+                    <h3>{{ $totalBikes }}</h3>
+
+                    <small class="dashboard-label">
+                        Total Bikes
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-gray"></div>
+            </div>
+        </div>
+
+        {{-- DISPONÍVEIS --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+
+                    <h3>{{ $disponiveis }}</h3>
+
+                    <small class="dashboard-label">
+                        Disponíveis
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-green"></div>
+            </div>
+        </div>
+
+        {{-- ALUGADAS --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-blue">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+
+                    <h3>{{ $alugadas }}</h3>
+
+                    <small class="dashboard-label">
+                        Alugadas
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-blue"></div>
+            </div>
+        </div>
+
+        {{-- RESERVADAS --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-orange">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+
+                    <h3>{{ $reservadas }}</h3>
+
+                    <small class="dashboard-label">
+                        Reservadas
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-orange"></div>
+            </div>
+        </div>
+
+        {{-- VENDIDAS --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-red">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+
+                    <h3>{{ $vendidas }}</h3>
+
+                    <small class="dashboard-label">
+                        Vendidas
+                    </small>
+
+                </div>
+
+                <div class="dashboard-line line-red"></div>
+            </div>
+        </div>
+
+        {{-- MANUTENÇÃO --}}
+        <div class="col-md-2">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+
+                    <div class="dashboard-icon mx-auto mb-2 icon-gray">
+                        <i class="fas fa-tools"></i>
+                    </div>
+
+                    <h3>{{ $manutencao }}</h3>
+
+                    <small class="dashboard-label">
+                        Manutenção
+                    </small>
+
+                </div>
+                <div class="dashboard-line line-gray"></div>
+            </div>
+            </div>
+
+                
+
+          </div>
+          </div>      
+
+{{-- =========================
+    PRÓXIMAS RETIRADAS
+========================= --}}
 <div class="row mb-4">
 
-<div class="col-md-2">
+    <div class="col-md-6">
 
-<div class="small-box bg-info">
+        <div class="card">
 
-<div class="inner">
+            <div class="card-header">
+                Próximas Retiradas
+            </div>
 
-<h3>
+            <div class="card-body">
 
-{{ $totalBikes }}
+                @forelse($proximasRetiradas as $locacao)
 
-</h3>
+                    <div class="mb-3">
+                        <strong>{{ $locacao->cliente->nome }}</strong><br>
+                        <small class="text-muted">{{ $locacao->bike->modelo }}</small><br>
 
-<p>Total Bikes</p>
+                        <span class="text-danger">
+                            Retirada: {{ date('d/m/Y', strtotime($locacao->data_vencimento)) }}
+                        </span>
+                    </div>
 
-</div>
+                    <hr>
 
-</div>
+                @empty
+                    <p class="text-muted">Nenhuma retirada programada.</p>
+                @endforelse
 
-</div>
+            </div>
 
+        </div>
 
-
-<div class="col-md-2">
-
-<div class="small-box bg-success">
-
-<div class="inner">
-
-<h3>
-
-{{ $disponiveis }}
-
-</h3>
-
-<p>Disponíveis</p>
+    </div>
 
 </div>
 
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-primary">
-
-<div class="inner">
-
-<h3>
-
-{{ $alugadas }}
-
-</h3>
-
-<p>Alugadas</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-warning">
-
-<div class="inner">
-
-<h3>
-
-{{ $reservadas }}
-
-</h3>
-
-<p>Reservadas</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-danger">
-
-<div class="inner">
-
-<h3>
-
-{{ $vendidas }}
-
-</h3>
-
-<p>Vendidas</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<div class="small-box bg-secondary">
-
-<div class="inner">
-
-<h3>
-
-{{ $manutencao }}
-
-</h3>
-
-<p>Manutenção</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="row mb-4">
-
-<div class="col-md-6">
-
-<div class="card">
-
-<div class="card-header bg-warning">
-
-<h3 class="card-title">
-
-Próximas Retiradas
-
-</h3>
-
-</div>
-
-<div class="card-body">
-
-@forelse($proximasRetiradas as $locacao)
-
-<div class="mb-2">
-
-<strong>
-
-{{ $locacao
-->cliente
-->nome }}
-
-</strong>
-
-<br>
-
-<small>
-
-{{ $locacao
-->bike
-->modelo }}
-
-</small>
-
-<br>
-
-<small class="text-danger">
-
-Retirada:
-
-{{
-
-date(
-
-'d/m/Y',
-
-strtotime(
-
-$locacao
-->data_vencimento
-
-)
-
-)
-
-}}
-
-</small>
-
-</div>
-
-<hr>
-
-@empty
-
-Nenhuma retirada.
-
-@endforelse
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-<div class="mb-3 d-flex flex-column flex-md-row">
-
-    <a href="{{ route('bikes.create') }}"
-       class="btn btn-success mb-2 mb-md-0 mr-md-2">
-
-        <i class="fas fa-plus"></i>
-
-        Nova Bike
-
+{{-- =========================
+    AÇÕES
+========================= --}}
+<div class="section-block">
+    <a href="{{ route('bikes.create') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Nova Bike
     </a>
 
-    <button
-        class="btn btn-primary"
-        data-toggle="modal"
-        data-target="#modalLote">
-
-        <i class="fas fa-layer-group"></i>
-
-        Cadastrar em lote
-
+    <button class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#modalLote">
+        <i class="fas fa-layer-group"></i> Cadastro em lote
     </button>
 
 </div>
 
-<table class="table table-bordered table-hover">
+{{-- =========================
+    TABELA
+========================= --}}
+<div class="card section-block">
+    <div class="card-header">
+        Lista de Bikes
+    </div>
 
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Modelo</th>
-            <th>Marca</th>
-            <th>Patrimônio</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
+    <div class="table-responsive">
 
-    <tbody>
+        <table class="table">
 
-        @foreach($bikes as $bike)
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Modelo</th>
+                    <th>Marca</th>
+                    <th>Patrimônio</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
 
-        <tr>
+            <tbody>
 
-            <td>
-                <strong>{{ $bike->codigo }}</strong>
-            </td>
+                @foreach($bikes as $bike)
 
-            <td>{{ $bike->modelo }}</td>
+                <tr>
 
-            <td>{{ $bike->marca }}</td>
+                    <td><strong>{{ $bike->codigo }}</strong></td>
+                    <td>{{ $bike->modelo }}</td>
+                    <td>{{ $bike->marca }}</td>
 
-            <td>
+                    <td>
+                        @if($bike->status_patrimonial == 'ativa')
+                            <span class="badge badge-success">Ativa</span>
+                        @elseif($bike->status_patrimonial == 'vendida')
+                            <span class="badge badge-primary">Vendida</span>
+                        @elseif($bike->status_patrimonial == 'descartada')
+                            <span class="badge badge-dark">Descartada</span>
+                        @else
+                            <span class="badge badge-danger">Roubada</span>
+                        @endif
+                    </td>
 
-                @if($bike->status_patrimonial == 'ativa')
+                    <td>
+                        @if($bike->status == 'disponivel')
+                            <span class="badge badge-success">Disponível</span>
+                        @elseif($bike->status == 'alugada')
+                            <span class="badge badge-primary">Alugada</span>
+                        @elseif($bike->status == 'manutencao')
+                            <span class="badge badge-warning">Manutenção</span>
+                        @elseif($bike->status == 'reservada')
+                            <span class="badge badge-info">Reservada</span>
+                        @else
+                            <span class="badge badge-danger">Inativa</span>
+                        @endif
+                    </td>
 
-                    <span class="badge badge-success">
-                        Ativa
-                    </span>
+                    
+<td class="text-center">
 
-                @elseif($bike->status_patrimonial == 'vendida')
+    <div class="dropdown">
 
-                    <span class="badge badge-primary">
-                        Vendida
-                    </span>
+        <button class="btn btn-sm btn-light border shadow-sm"
+                type="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
 
-                @elseif($bike->status_patrimonial == 'descartada')
+            <i class="fas fa-ellipsis-v"></i>
 
-                    <span class="badge badge-dark">
-                        Descartada
-                    </span>
+        </button>
 
-                @else
+        <div class="dropdown-menu dropdown-menu-right">
 
-                    <span class="badge badge-danger">
-                        Roubada
-                    </span>
+            <a class="dropdown-item"
+               href="{{ route('bikes.show', $bike->uuid) }}">
 
-                @endif
+                <i class="fas fa-eye text-info mr-2"></i>
+                Visualizar
 
-            </td>
+            </a>
 
-            <td>
+            <a class="dropdown-item"
+               href="{{ route('bikes.edit', $bike->uuid) }}">
 
-                @if($bike->status == 'disponivel')
+                <i class="fas fa-edit text-warning mr-2"></i>
+                Editar
 
-                    <span class="badge badge-success">
-                        Disponível
-                    </span>
+            </a>
 
-                @elseif($bike->status == 'alugada')
+            @if($bike->status_patrimonial == 'ativa')
 
-                    <span class="badge badge-primary">
-                        Alugada
-                    </span>
+                <div class="dropdown-divider"></div>
 
-                @elseif($bike->status == 'manutencao')
+                <button type="button"
+                        class="dropdown-item btn-vender"
+                        data-toggle="modal"
+                        data-target="#modalVenderBike"
+                        data-id="{{ $bike->uuid }}"
+                        data-modelo="{{ $bike->modelo }}">
 
-                    <span class="badge badge-warning">
-                        Manutenção
-                    </span>
+                    <i class="fas fa-dollar-sign text-danger mr-2"></i>
+                    Vender
 
-                @elseif($bike->status == 'reservada')
+                </button>
 
-                    <span class="badge badge-info">
-                        Reservada
-                    </span>
+            @endif
 
-                @else
+            @if($bike->status == 'disponivel' && $bike->status_patrimonial == 'ativa')
 
-                    <span class="badge badge-danger">
-                        Inativa
-                    </span>
+                <button type="button"
+                        class="dropdown-item btn-alugar"
+                        data-toggle="modal"
+                        data-target="#modalAlugarBike"
+                        data-id="{{ $bike->uuid }}"
+                        data-modelo="{{ $bike->modelo }}">
 
-                @endif
+                    <i class="fas fa-bicycle text-primary mr-2"></i>
+                    Alugar
 
-            </td>
+                </button>
 
-            <td>
-<a href="{{ route('bikes.show', $bike->uuid) }}"
-   class="btn btn-info btn-sm">
+            @endif
 
-    <i class="fas fa-eye"></i>
+        </div>
 
-</a>
+    </div>
 
-<a href="{{ route('bikes.edit', $bike->uuid) }}"
-   class="btn btn-warning btn-sm">
+</td>
+                    
 
-    <i class="fas fa-edit"></i>
+                </tr>
 
-</a>
-                @if($bike->status_patrimonial == 'ativa')
+                @endforeach
 
-                    <button type="button"
-        class="btn btn-danger btn-sm btn-vender"
-        data-toggle="modal"
-        data-target="#modalVenderBike"
-        data-id="{{ $bike->uuid }}"
-        data-modelo="{{ $bike->modelo }}">
-    Vender
-</button>
+            </tbody>
 
-                @endif
+        </table>
 
+    </div>
 
-                @if(
-    $bike->status == 'disponivel' &&
-    $bike->status_patrimonial == 'ativa'
-)
+</div>
 
-<button type="button"
-        class="btn btn-primary btn-sm btn-alugar"
-        data-toggle="modal"
-        data-target="#modalAlugarBike"
-        data-id="{{ $bike->uuid }}"
-        data-modelo="{{ $bike->modelo }}">
-    Alugar
-</button>
+{{-- =========================
+    MODAIS (mantidos intactos)
+========================= --}}
 
-@endif
-
-            </td>
-
-        </tr>
-
-        @endforeach
-
-    </tbody>
-
-</table>
 <div class="modal fade"
      id="modalAlugarBike"
      tabindex="-1"

@@ -2,158 +2,153 @@
 
 @section('title', 'Editar Bike')
 
-@section('content_header')
-    <h1>Editar Bike</h1>
-@stop
-
 @section('content')
 
-<div class="card">
+<div class="content-header section-block">
+    <h3 class="mb-0">Editar Bike</h3>
+    <small class="text-muted">
+        Atualize as informações da bicicleta
+    </small>
+</div>
 
-    <div class="card-body">
+<div class="section-block">
 
-        <form action="{{ route('bikes.update', $bike->uuid) }}"
-              method="POST">
+    <div class="card">
 
-            @csrf
-            @method('PUT')
+        <div class="card-header">
+            Dados da Bike
+        </div>
 
-            <div class="form-group">
+        <div class="card-body">
 
-                <label>Código</label>
+            <form action="{{ route('bikes.update', $bike->uuid) }}"
+                  method="POST">
 
-                <input type="text"
-                       name="codigo"
-                       class="form-control"
-                       value="{{ $bike->codigo }}"
-                       required>
+                @csrf
+                @method('PUT')
 
-            </div>
+                <div class="row">
 
-            <div class="form-group">
+                    {{-- CÓDIGO --}}
+                    <div class="col-md-4 mb-3">
+                        <label>Código</label>
+                        <input type="text"
+                               name="codigo"
+                               class="form-control"
+                               value="{{ $bike->codigo }}"
+                               required>
+                    </div>
 
-                <label>Modelo</label>
+                    {{-- MODELO --}}
+                    <div class="col-md-4 mb-3">
+                        <label>Modelo</label>
+                        <input type="text"
+                               name="modelo"
+                               class="form-control"
+                               value="{{ $bike->modelo }}"
+                               required>
+                    </div>
 
-                <input type="text"
-                       name="modelo"
-                       class="form-control"
-                       value="{{ $bike->modelo }}"
-                       required>
+                    {{-- MARCA --}}
+                    <div class="col-md-4 mb-3">
+                        <label>Marca</label>
+                        <input type="text"
+                               name="marca"
+                               class="form-control"
+                               value="{{ $bike->marca }}"
+                               required>
+                    </div>
 
-            </div>
+                    {{-- STATUS --}}
+                    <div class="col-md-6 mb-3">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
 
-            <div class="form-group">
+                            <option value="disponivel" {{ $bike->status == 'disponivel' ? 'selected' : '' }}>
+                                Disponível
+                            </option>
 
-                <label>Marca</label>
+                            <option value="alugada" {{ $bike->status == 'alugada' ? 'selected' : '' }}>
+                                Alugada
+                            </option>
 
-                <input type="text"
-                       name="marca"
-                       class="form-control"
-                       value="{{ $bike->marca }}"
-                       required>
+                            <option value="manutencao" {{ $bike->status == 'manutencao' ? 'selected' : '' }}>
+                                Manutenção
+                            </option>
 
-            </div>
+                            <option value="reservada" {{ $bike->status == 'reservada' ? 'selected' : '' }}>
+                                Reservada
+                            </option>
 
-            <div class="form-group">
+                            <option value="inativa" {{ $bike->status == 'inativa' ? 'selected' : '' }}>
+                                Inativa
+                            </option>
 
-                <label>Status</label>
+                        </select>
+                    </div>
 
-                <select name="status"
-                        class="form-control">
+                    {{-- STATUS PATRIMONIAL --}}
+                    <div class="col-md-6 mb-3">
+                        <label>Status Patrimonial</label>
+                        <select name="status_patrimonial" class="form-control">
 
-                    <option value="disponivel"
-                        {{ $bike->status == 'disponivel' ? 'selected' : '' }}>
-                        Disponível
-                    </option>
+                            <option value="ativa" {{ $bike->status_patrimonial == 'ativa' ? 'selected' : '' }}>
+                                Ativa
+                            </option>
 
-                    <option value="alugada"
-                        {{ $bike->status == 'alugada' ? 'selected' : '' }}>
-                        Alugada
-                    </option>
+                            <option value="vendida" {{ $bike->status_patrimonial == 'vendida' ? 'selected' : '' }}>
+                                Vendida
+                            </option>
 
-                    <option value="manutencao"
-                        {{ $bike->status == 'manutencao' ? 'selected' : '' }}>
-                        Manutenção
-                    </option>
+                            <option value="descartada" {{ $bike->status_patrimonial == 'descartada' ? 'selected' : '' }}>
+                                Descartada
+                            </option>
 
-                    <option value="reservada"
-                        {{ $bike->status == 'reservada' ? 'selected' : '' }}>
-                        Reservada
-                    </option>
+                            <option value="roubada" {{ $bike->status_patrimonial == 'roubada' ? 'selected' : '' }}>
+                                Roubada
+                            </option>
 
-                    <option value="inativa"
-                        {{ $bike->status == 'inativa' ? 'selected' : '' }}>
-                        Inativa
-                    </option>
+                        </select>
+                    </div>
 
-                </select>
+                    {{-- VALOR COMPRA --}}
+                    <div class="col-md-6 mb-3">
+                        <label>Valor de Compra</label>
+                        <input type="number"
+                               step="0.01"
+                               name="valor_compra"
+                               class="form-control"
+                               value="{{ $bike->valor_compra }}">
+                    </div>
 
-            </div>
+                    {{-- DATA COMPRA --}}
+                    <div class="col-md-6 mb-3">
+                        <label>Data da Compra</label>
+                        <input type="date"
+                               name="data_compra"
+                               class="form-control"
+                               value="{{ $bike->data_compra }}">
+                    </div>
 
-            <div class="form-group">
+                </div>
 
-                <label>Status Patrimonial</label>
+                {{-- AÇÕES --}}
+                <div class="section-block actions-group">
 
-                <select name="status_patrimonial"
-                        class="form-control">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i>
+                        Atualizar Bike
+                    </button>
 
-                    <option value="ativa"
-                        {{ $bike->status_patrimonial == 'ativa' ? 'selected' : '' }}>
-                        Ativa
-                    </option>
+                    <a href="{{ route('bikes.index') }}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
 
-                    <option value="vendida"
-                        {{ $bike->status_patrimonial == 'vendida' ? 'selected' : '' }}>
-                        Vendida
-                    </option>
+                </div>
 
-                    <option value="descartada"
-                        {{ $bike->status_patrimonial == 'descartada' ? 'selected' : '' }}>
-                        Descartada
-                    </option>
+            </form>
 
-                    <option value="roubada"
-                        {{ $bike->status_patrimonial == 'roubada' ? 'selected' : '' }}>
-                        Roubada
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Valor de Compra</label>
-
-                <input type="number"
-                       step="0.01"
-                       name="valor_compra"
-                       class="form-control"
-                       value="{{ $bike->valor_compra }}">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Data da Compra</label>
-
-                <input type="date"
-                       name="data_compra"
-                       class="form-control"
-                       value="{{ $bike->data_compra }}">
-
-            </div>
-
-            
-            
-
-            <button class="btn btn-success">
-
-                Atualizar Bike
-
-            </button>
-
-        </form>
+        </div>
 
     </div>
 
