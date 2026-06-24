@@ -47,4 +47,32 @@ public function historicos()
         BikeHistorico::class
     )->latest();
 }
+
+
+public function setCodigoAttribute($value)
+{
+    $this->attributes['codigo'] = $value
+        ? mb_strtoupper(trim($value))
+        : null;
+}
+
+public function setMarcaAttribute($value)
+{
+    $this->attributes['marca'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
+}
+
+public function setModeloAttribute($value)
+{
+    $this->attributes['modelo'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
+}
+public function setStatusAttribute($value)
+{
+    $this->attributes['status'] = $value
+        ? mb_strtolower(trim($value))
+        : null;
+}
 }

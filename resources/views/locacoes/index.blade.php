@@ -171,15 +171,17 @@
     TABELA
 ========================= --}}
 <div class="section-block">
+    <div class="card shadow-sm border-0">
 
-    <div class="card">
+        <div class="card-body p-0">
 
-        <div class="table-wrapper">
+            <div class="table-responsive">
 
-            <table class="table table-hover table-bordered">
-
+                <table id="tabelaLocacoes"
+                       class="table table-hover table-bordered mb-0">
                 <thead>
                     <tr>
+                        
                         <th>Cliente</th>
                         <th>Bike</th>
                         <th>Plano</th>
@@ -188,7 +190,7 @@
                         <th>Vencimento</th>
                         <th>Status</th>
                         <th>Financeiro</th>
-                        <th width="180">Ações</th>
+                        <th width="10">Ações</th>
                     </tr>
                 </thead>
 
@@ -230,33 +232,40 @@
 
                 <tr>
 
-                    <td>
-                        <strong>{{ $locacao->cliente->nome ?? '-' }}</strong>
+                    
+                        <td style="width:250px">
+    <a href="{{ route('locacoes.show', $locacao->uuid) }}"
+       class="cliente-link nome-cliente cliente-link"
+       title="{{ $locacao->cliente->nome ?? '-' }}">
+        {{ $locacao->cliente->nome ?? '-' }}
+    </a>
+
+                       
                     </td>
 
-                    <td>{{ $locacao->bike->modelo ?? '-' }}</td>
+                    <td class="text-center">{{ $locacao->bike->modelo ?? '-' }}</td>
 
-                    <td>
+                    <td class="text-center">
                         <span class="badge badge-primary">
                             {{ $locacao->plano->nome ?? 'Sem plano' }}
                         </span>
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         <strong class="text-success">
                             R$ {{ number_format($locacao->valor_mensal,2,',','.') }}
                         </strong>
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         {{ $locacao->data_inicio ? \Carbon\Carbon::parse($locacao->data_inicio)->format('d/m/Y') : '-' }}
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         {{ $venceHoje ? $venceHoje->format('d/m/Y') : '-' }}
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         @if($locacao->status == 'ativa')
                             <span class="badge badge-success">Ativa</span>
                         @elseif($locacao->status == 'atrasada')
@@ -266,7 +275,7 @@
                         @endif
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         @if($saldoPendente <= 0)
                             <span class="badge badge-success">Quitado</span>
                         @else
@@ -279,7 +288,7 @@
 
                     <td class="text-center">
 
-    <div class="dropdown position-static">
+    <div class="dropdown">
 
         <button class="btn btn-sm btn-light border shadow-sm"
                 type="button"
@@ -350,8 +359,16 @@
                 </button>
 
             @endif
-
-            <div class="dropdown-divider"></div>
+@if($locacao->status == 'aguardando_entrega ' || $locacao->status == 'ativa')
+            <button type="button"
+        class="dropdown-item"
+        data-toggle="modal"
+        data-target="#modalTrocarBike{{ $locacao->uuid }}">
+    <i class="fas fa-bicycle mr-2"></i>
+    Trocar Bike
+</button>
+ @endif
+<div class="dropdown-divider"></div>
 
             <button type="button"
                     class="dropdown-item"
@@ -499,7 +516,122 @@
 </div>
 
 
+<div class="modal fade" id="modalTrocarBike{{ $locacao->uuid }}" tabindex="-1" >
 
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+
+            <div class="modal-header spinmove-header">
+
+                <h5 class="modal-title">
+                    <i class="fas fa-bicycle mr-2"></i>
+                    Trocar Bike
+                </h5>
+
+                <button type="button" 
+                        class="close" 
+                        data-dismiss="modal">
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form action="{{ route('locacoes.trocarBike', $locacao->id) }}"
+                  method="POST">
+
+                @csrf
+
+
+                <div class="modal-body">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Bike atual
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               value="{{ $locacao->bike->codigo ?? 'Sem bike' }} - {{ $locacao->bike->marca ?? 'Sem bike' }}"
+                               disabled>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Nova bike
+                        </label>
+
+
+                        <select name="bike_id"
+        class="form-control text-dark"
+        style="color:#333 !important;"
+        required>
+
+
+                            <option value="">
+                                Selecione uma bike
+                            </option>
+
+@foreach($bikesDisponiveis as $bike)
+
+    <option value="{{ $bike->id }}"
+            style="color:#333 !important;">
+
+        {{ $bike->codigo }} - {{ $bike->marca }}
+
+    </option>
+
+@endforeach
+
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="modal-footer">
+
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button type="submit"
+                            class="btn btn-warning">
+
+                        Confirmar troca
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <div class="modal fade"
@@ -893,7 +1025,106 @@ $novaData =
     </div>
 
 </div>
+<style>
+.table-wrapper{
+    padding: 15px;
+}
 
+.dataTables_wrapper .row:first-child{
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.dataTables_length,
+.dataTables_filter{
+    margin-bottom: 10px;
+}
+
+.dataTables_filter{
+    text-align:right;
+}
+
+.dataTables_filter input{
+    border-radius:10px;
+    border:1px solid #dee2e6;
+    padding:6px 10px;
+    height:38px;
+}
+
+.dataTables_length select{
+    border-radius:10px;
+    border:1px solid #dee2e6;
+    height:38px;
+}
+
+.table{
+    margin-bottom:0 !important;
+}
+
+.table thead th{
+    vertical-align:middle !important;
+    padding:14px 12px !important;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    white-space:nowrap;
+}
+
+.table tbody td{
+    padding:12px !important;
+    vertical-align:middle !important;
+}
+
+.dataTables_paginate{
+    margin-top:15px !important;
+}
+
+.dataTables_info{
+    margin-top:20px !important;
+}
+
+.card{
+    border-radius:12px;
+    
+}
+.table thead th{
+    text-align:center !important;
+    vertical-align:middle !important;
+}
+.table thead th{
+    text-align:center !important;
+    vertical-align:middle !important;
+}
+
+.table tbody td:first-child{
+    text-align:left !important;
+}
+.dataTables_wrapper{
+    padding:10px;
+}
+
+  
+.nome-cliente{
+    display:block;
+    max-width:250px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:600;
+}
+
+.cliente-link{
+    color:#212529 !important;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.cliente-link:hover{
+    color:#ff6b00 !important;
+}
+
+</style>
 @stop
 
 @section('js')
@@ -903,12 +1134,18 @@ $novaData =
 
 <script>
 $(function () {
-    $('.table').DataTable({
-        pageLength: 25,
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/pt-BR.json'
-        }
-    });
+    $('#tabelaLocacoes').DataTable({
+    responsive: true,
+    autoWidth: false,
+    pageLength: 25,
+    language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/pt-BR.json'
+    },
+    dom:
+        "<'row mb-3'<'col-md-6'l><'col-md-6'f>>" +
+        "rt" +
+        "<'row mt-3'<'col-md-6'i><'col-md-6'p>>"
+});
 });
 </script>
 

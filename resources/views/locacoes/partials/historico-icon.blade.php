@@ -62,20 +62,21 @@ use App\Support\HistoricoEventos;
         @break
 
     @case(HistoricoEventos::BIKE_RETIRADA)
-        <i class="fas fa-bicycle text-success"></i>
+        <i class="fas fa-check-circle text-success"></i>
         @break
 
-    @case(HistoricoEventos::BIKE_ENTREGUE)
-        <i class="fas fa-truck text-info"></i>
-        @break
 
     @case(HistoricoEventos::RETIRADA_AGENDADA)
         <i class="fas fa-calendar-alt text-info"></i>
         @break
 
+
+    @case(HistoricoEventos::TROCA_DE_BIKE)
+        <i class="fas fa-exchange-alt text-info"></i>
+        @break
+
     @case(HistoricoEventos::PLANO_ATIVADO)
         <i class="fas fa-check-circle text-success"></i>
-       
         @break
 
     @default

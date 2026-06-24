@@ -413,17 +413,31 @@ $falta = $valorPlano - $totalPago;
 
 <!-- MAPA -->
 
-<div class="card mb-4">
+<div class="card card-outline card-secondary collapsed-card mb-4">
 
     <div class="card-header spinmove-header">
 
-        <h5 class="mb-0">
+        <h5 class="mb-0 card-title">
 
             <i class="fas fa-map-marker-alt mr-2"></i>
 
-            Localização do Cliente
+            Localização do Cliente <small class="text-muted ml-2">
+    {{ $cliente->bairro }}/{{ $cliente->cidade }}
+</small>
 
         </h5>
+
+        <div class="card-tools">
+
+            <button type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse">
+
+                <i class="fas fa-plus"></i>
+
+            </button>
+
+        </div>
 
     </div>
 
@@ -454,19 +468,60 @@ $falta = $valorPlano - $totalPago;
 
 <!-- LOCAÇÕES -->
 
-<div class="card mb-4">
+
+@php
+
+$historico = collect();
+
+foreach($cliente->locacoes as $locacao){
+
+    $historico->push([
+    'tipo' => 'Locação',
+    'plano' => $locacao->plano->nome ?? '-',
+    'inicio' => $locacao->data_inicio,
+    'fim' => $locacao->data_vencimento,
+    'status' => $locacao->status,
+]);
+
+    foreach($locacao->renovacoes as $renovacao){
+
+        $historico->push([
+    'tipo' => 'Renovação',
+    'plano' => $renovacao->plano_nome ?? 'Não informado',
+    'inicio' => $renovacao->data_anterior,
+    'fim' => $renovacao->nova_data,
+    'status' => 'renovada',
+]);
+    }
+
+}
+$historico = $historico->sortByDesc('fim');
+
+@endphp
+<div class="card card-outline card-secondary collapsed-card mt-4">
 
     <div class="card-header spinmove-header">
 
-        <h5 class="mb-0">
-
+        <h3 class="card-title">
             <i class="fas fa-bicycle mr-2"></i>
+        Locações e Renovações
+        </h3>
 
-            Locações do Cliente
+        <div class="card-tools">
 
-        </h5>
+            <button type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse">
+
+                <i class="fas fa-plus"></i>
+
+            </button>
+
+        </div>
 
     </div>
+
+
 
     <div class="card-body p-0">
 
@@ -474,69 +529,69 @@ $falta = $valorPlano - $totalPago;
 
             <table class="table mb-0">
 
-                <thead>
+    <thead>
+    <tr>
+        <th>Tipo</th>
+        <th>Plano</th>
+        <th>Início</th>
+        <th>Vencimento</th>
+        <th>Status</th>
+    </tr>
+</thead>
 
-                    <tr>
+<tbody>
 
-                        <th>Bike</th>
-                        <th>Plano</th>
-                        <th>Início</th>
-                        <th>Vencimento</th>
-                        <th>Status</th>
+    @forelse($historico as $item)
 
-                    </tr>
+    <tr>
 
-                </thead>
+        <td>
 
-                <tbody>
+            @if($item['tipo'] == 'Locação')
 
-                    @foreach($cliente->locacoes as $locacao)
+                <span class="badge badge-primary">
+                    Locação
+                </span>
 
-                    <tr>
+            @else
 
-                        <td>{{ $locacao->bike->modelo ?? '-' }}</td>
+                <span class="badge badge-info">
+                    Renovação
+                </span>
 
-                        <td>{{ $locacao->plano->nome ?? '-' }}</td>
+            @endif
 
-                        <td>
-                            {{ \Carbon\Carbon::parse($locacao->data_inicio)->format('d/m/Y') }}
-                        </td>
+        </td>
+<td>
+    {{ $item['plano'] }}
+</td>
+        <td>
+            {{ \Carbon\Carbon::parse($item['inicio'])->format('d/m/Y') }}
+        </td>
 
-                        <td>
-                            {{ \Carbon\Carbon::parse($locacao->data_vencimento)->format('d/m/Y') }}
-                        </td>
+        <td>
+            {{ \Carbon\Carbon::parse($item['fim'])->format('d/m/Y') }}
+        </td>
 
-                        <td>
+        <td>
+            {{ ucfirst($item['status']) }}
+        </td>
 
-                            @if($locacao->status == 'ativa')
+    </tr>
 
-                                <span class="badge badge-success">
-                                    Ativa
-                                </span>
+    @empty
 
-                            @elseif($locacao->status == 'atrasada')
+    <tr>
+        <td colspan="4" class="text-center text-muted">
+            Nenhum histórico encontrado.
+        </td>
+    </tr>
 
-                                <span class="badge badge-danger">
-                                    Atrasada
-                                </span>
+    @endforelse
 
-                            @else
+</tbody>
 
-                                <span class="badge badge-secondary">
-                                    Finalizada
-                                </span>
-
-                            @endif
-
-                        </td>
-
-                    </tr>
-
-                    @endforeach
-
-                </tbody>
-
-            </table>
+</table>
 
         </div>
 
@@ -544,7 +599,7 @@ $falta = $valorPlano - $totalPago;
 
 </div>
 
-<div class="card mt-4">
+<div class="card card-outline card-secondary collapsed-card mt-4">
 
     <div class="card-header spinmove-header">
 
@@ -552,6 +607,18 @@ $falta = $valorPlano - $totalPago;
             <i class="fas fa-history mr-2"></i>
             Histórico do Cliente
         </h3>
+
+        <div class="card-tools">
+
+            <button type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse">
+
+                <i class="fas fa-plus"></i>
+
+            </button>
+
+        </div>
 
     </div>
 
@@ -709,15 +776,17 @@ $falta = $valorPlano - $totalPago;
 
 .timeline-icon{
     position:absolute;
-    left:-30px;
-    top:3px;
-    width:24px;
-    height:24px;
+    left:-40px;
+    top: 50%;
+    width:34px;
+    height:34px;
     background:#fff;
     border-radius:50%;
     text-align:center;
     line-height:24px;
     box-shadow:0 0 0 4px #fff;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .timeline-content{

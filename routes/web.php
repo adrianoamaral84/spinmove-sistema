@@ -205,6 +205,8 @@ Route::post('/bikes/lote',[BikeController::class,'storeLote'])->name('bikes.lote
 
 Route::get('/relatorios', [App\Http\Controllers\RelatorioController::class, 'index'])
     ->name('relatorios.index');
-
+Route::post('/locacoes/{locacao}/trocar-bike',
+    [LocacaoController::class, 'trocarBike']
+)->name('locacoes.trocarBike');
 
 require __DIR__.'/auth.php';

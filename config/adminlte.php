@@ -334,18 +334,18 @@ return [
         'icon' => 'fas fa-users',
     ],
 
-    [
-        'text' => 'Bikes',
-        'url'  => 'bikes',
-        'icon' => 'fas fa-bicycle',
-    ],
+    
 
     [
         'text' => 'Locações',
         'url'  => 'locacoes',
         'icon' => 'fas fa-file-contract',
     ],
-
+    [
+        'text' => 'Bikes',
+        'url'  => 'bikes',
+        'icon' => 'fas fa-bicycle',
+    ],
     [
         'text' => 'Vendas',
         'url'  => 'vendas',

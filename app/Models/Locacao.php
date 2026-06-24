@@ -73,4 +73,9 @@ public function getStatusLabelAttribute()
         default => 'Finalizada'
     };
 }
+public function eventos()
+{
+    return $this->hasMany(LocacaoEvento::class);
+}
+
 }

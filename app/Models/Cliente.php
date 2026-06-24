@@ -10,6 +10,7 @@ use App\Traits\HasUuid;
 use App\Models\ClienteHistorico;
 
 
+
 class Cliente extends Model
 {
     use HasUuid;
@@ -146,6 +147,66 @@ public function historicos()
     return $this->hasMany(
         ClienteHistorico::class
     )->latest();
+}
+
+
+
+public function setNomeAttribute($value)
+{
+    $this->attributes['nome'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
+}
+
+public function setCidadeAttribute($value)
+{
+    $this->attributes['cidade'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
+}
+
+public function setEstadoAttribute($value)
+{
+    $this->attributes['estado'] = $value
+        ? mb_strtoupper(trim($value))
+        : null;
+}
+
+public function setEmailAttribute($value)
+{
+    $this->attributes['email'] = $value
+        ? mb_strtolower(trim($value))
+        : null;
+}
+public function setCpfAttribute($value)
+{
+    $this->attributes['cpf'] = $value
+        ? preg_replace('/\D/', '', $value)
+        : null;
+}
+public function setTelefoneAttribute($value)
+{
+    $this->attributes['telefone'] = $value
+        ? preg_replace('/\D/', '', $value)
+        : null;
+}
+public function setCepAttribute($value)
+{
+    $this->attributes['cep'] = $value
+        ? preg_replace('/\D/', '', $value)
+        : null;
+}
+public function setEnderecoAttribute($value)
+{
+    $this->attributes['endereco'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
+}
+public function setBairroAttribute($value)
+{
+    $this->attributes['bairro'] = $value
+        ? Str::title(mb_strtolower(trim($value)))
+        : null;
 }
 
 

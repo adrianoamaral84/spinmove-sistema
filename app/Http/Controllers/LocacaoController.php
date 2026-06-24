@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\LocacaoRenovacao;
 use App\Models\Pagamento;
 use App\Services\HistoricoService;
+use Carbon\Carbon;
 
 class LocacaoController extends Controller
 {
@@ -49,14 +50,18 @@ date_default_timezone_set('America/Sao_Paulo');
         'ativa',
         'atrasada'
     ])->sum('valor_mensal');
+$bikesDisponiveis = Bike::where('status','disponivel')
+    ->get();
 
+    
     return view('locacoes.index', compact(
         'locacoes',
         'locacoesAtivas',
         'locacoesAtrasadas',
         'vencemHoje',
         'receitaMensal',
-        'planos'
+        'planos',
+        'bikesDisponiveis'
     ));
 }
 
@@ -115,38 +120,11 @@ public function show($id)
         }
     }
 
-$eventos = collect();
-$eventos->push([
-    'data' => $locacao->created_at,
-    'titulo' => 'Locação criada',
-    'descricao' => 'Contrato iniciado'
-]);
-foreach ($locacao->pagamentos as $pagamento) {
+$eventos = $locacao->eventos()
+    ->latest()
+    ->get();
 
-    $eventos->push([
-        'data' => $pagamento->created_at,
-        'titulo' => 'Pagamento registrado',
-        'descricao' => 'R$ ' . number_format($pagamento->valor,2,',','.')
-    ]);
-
-}
-foreach ($locacao->renovacoes as $renovacao) {
-
-    $eventos->push([
-        'data' => $renovacao->created_at,
-        'titulo' => 'Renovação',
-        'descricao' => 'Novo vencimento: ' .
-            \Carbon\Carbon::parse($renovacao->nova_data)
-            ->format('d/m/Y')
-    ]);
-
-}
-
-$eventos = $eventos
-    ->sortByDesc('data')
-    ->values();
-
-
+$bikesDisponiveis = Bike::where('status','disponivel')->get();
 
     return view('locacoes.show', compact(
         'locacao',
@@ -154,7 +132,8 @@ $eventos = $eventos
         'totalPago',
         'saldoPendente',
         'cobrancas',
-        'eventos'
+        'eventos',
+        'bikesDisponiveis'
     ));
 }
 
@@ -167,7 +146,7 @@ $eventos = $eventos
 
 
     // Cria locação
-    Locacao::create([
+    $locacao = Locacao::create([
 
     'bike_id' => $bike->id,
 
@@ -186,16 +165,21 @@ $eventos = $eventos
 HistoricoService::registrar(
     $request->cliente_id,
     'Locação criada',
-    'Bike #'.$bike->id.' vinculada ao cliente'
+    'Bike #'.$bike->id.' '.$bike->marca.' vinculada ao cliente'
+);
+$this->registrarEvento(
+    $locacao,
+    'Locação criada',
+    'Locação criada',
+    'Bike #'.$bike->id.' '.$bike->marca.' vinculada ao cliente'
 );
 
     // Atualiza bike
     $bike->status = 'reservada';
 
     $bike->save();
+return redirect()->route('locacoes.index')->with('success', 'Locação criada com sucesso!');
 
-    return redirect()->back()
-        ->with('success', 'Bike alugada com sucesso!');
 }
 
     public function devolver(Locacao $locacao)
@@ -215,8 +199,15 @@ HistoricoService::registrar(
 HistoricoService::registrar(
     $locacao->cliente_id,
 'Bike devolvida',
-    'Bike #'.$bike->id.' devolvida pelo cliente'
+    'Bike #'.$bike->id.' '.$bike->marca.' devolvida pelo cliente'
 );
+$this->registrarEvento(
+    $locacao,
+    'Bike devolvida',
+    'Bike devolvida',
+    'Bike #'.$bike->id.' '.$bike->marca.' devolvida pelo cliente'
+);
+
     return redirect()->back()
         ->with('success', 'Bike devolvida com sucesso!');
 }
@@ -268,6 +259,10 @@ public function renovar(Request $request, Locacao $locacao)
 
         'valor' => $plano->valor,
 
+        'plano_id' => $request->plano_id,
+
+        'plano_nome' => $plano->nome ?? null
+
     ]);
     Pagamento::create([
 
@@ -308,9 +303,14 @@ public function renovar(Request $request, Locacao $locacao)
     HistoricoService::registrar(
     $locacao->cliente_id,
     'Locação renovada',
-    'Locação renovada para o plano '.$plano->nome.' com vencimento em '.$request->data_vencimento
+'Locação renovada para o plano '.$plano->nome.' com vencimento em '.Carbon::parse($request->data_vencimento)->format('d/m/Y')
 );
-
+    $this->registrarEvento(
+        $locacao,
+        'Locação renovada',
+        'Locação renovada',
+        'Locação renovada para o plano '.$plano->nome.' com vencimento em '.Carbon::parse($request->data_vencimento)->format('d/m/Y')
+    );
     return redirect()
         ->back()
         ->with('success', 'Locação renovada com sucesso!');
@@ -375,11 +375,34 @@ public function entregar(Locacao $locacao)
 
     }
 
+
+    
 HistoricoService::registrar(
     $locacao->cliente_id,
     'Bike entregue',
-    'Bike #'.$locacao->bike->id.' entregue ao cliente'
+    'Bike #'.$locacao->bike->id.' '.$locacao->bike->marca.' entregue ao cliente'
 );
+
+HistoricoService::registrar(
+    $locacao->cliente_id,
+    'Plano ativado',
+    'Plano '. $locacao->plano->nome .' ativado para a locação da bike #'.$locacao->bike->id.' '.$locacao->bike->marca
+);
+
+$this->registrarEvento(
+    $locacao,
+    'Bike entregue',
+    'Bike entregue',
+    'Bike #'.$locacao->bike->id.' '.$locacao->bike->marca.' entregue ao cliente'
+);
+
+$this->registrarEvento(
+    $locacao,
+    'Plano ativado',
+    'Plano ativado',
+    'Plano '. $locacao->plano->nome .' ativado para a locação da bike #'.$locacao->bike->id.' '.$locacao->bike->marca
+);
+
 
 
     return redirect()
@@ -483,7 +506,12 @@ public function registrarPagamento(
     'Pagamento registrado',
     'Pagamento de R$ '.$request->valor.' registrado para a locação'
     );
-
+$this->registrarEvento(
+    $locacao,
+    'Pagamento registrado',
+    'Pagamento registrado',
+    'Pagamento de R$ '.$request->valor.' registrado para a locação'
+);
 
     return back()->with(
         'success',
@@ -510,6 +538,12 @@ public function agendarRetirada(Request $request, Locacao $locacao)
 HistoricoService::registrar(
     $locacao->cliente_id,
 'Retirada agendada',
+    'Aguardado para retirada da bike'
+);
+$this->registrarEvento(
+    $locacao,
+    'Retirada agendada',
+    'Retirada agendada',
     'Aguardado para retirada da bike'
 );
 
@@ -573,7 +607,13 @@ public function finalizarRetirada(Request $request, Locacao $locacao)
     
 HistoricoService::registrar(
     $locacao->cliente_id,
-    'Bike devolvida',
+    'Bike retirada',
+    'Retirada finalizada'
+);
+$this->registrarEvento(
+    $locacao,
+    'Bike retirada',
+    'Bike retirada',
     'Retirada finalizada'
 );
 
@@ -636,6 +676,7 @@ public function update(Request $request, $uuid)
     $locacao = Locacao::where('uuid', $uuid)->firstOrFail();
 
     $locacao->update($request->all());
+
 HistoricoService::registrar(
     $locacao->cliente_id,
     'Locação atualizada',
@@ -644,6 +685,59 @@ HistoricoService::registrar(
     return redirect()
         ->route('locacoes.index')
         ->with('success', 'Locação atualizada com sucesso!');
+
+
+        }
+
+
+    private function registrarEvento(
+    $locacao,
+    string $tipo,
+    string $titulo,
+    ?string $descricao = null
+)
+{
+    \App\Models\LocacaoEvento::create([
+        'locacao_id' => $locacao->id,
+        'tipo'       => $tipo,
+        'titulo'     => $titulo,
+        'descricao'  => $descricao,
+    ]);
+}
+
+public function trocarBike(Request $request, Locacao $locacao)
+{
+
+    $request->validate([
+        'bike_id' => 'required|exists:bikes,id'
+    ]);
+
+
+    $bikeAntiga = $locacao->bike->nome ?? 'Sem bike';
+
+
+    $locacao->update([
+        'bike_id' => $request->bike_id
+    ]);
+
+
+    $novaBike = Bike::find($request->bike_id);
+
+
+  
+    $this->registrarEvento(
+    $locacao,
+    'Troca de bike',
+    'Troca de bike',
+    'Bike alterada de '.$bikeAntiga. ' para '.$novaBike->nome
+);
+
+
+    return back()->with(
+        'success',
+        'Bike trocada com sucesso!'
+    );
+
 }
 }
 

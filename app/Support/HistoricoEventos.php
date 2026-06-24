@@ -34,6 +34,16 @@ class HistoricoEventos
     
     const LOCACAO_CRIADA = 'Locação criada';
 
-    const BIKE_DEVOLVIDA = 'Bike devolvida';
+    const BIKE_RETIRADA = 'Bike retirada';
+
+    const TROCA_DE_BIKE = 'Troca de bike';
+
+    const PLANO_ATIVADO = 'Plano ativado';
+
+
+
+
+
+    
 
 }

@@ -1,5 +1,6 @@
 @php
     use App\Models\Pagamento;
+    use Illuminate\Support\Str;
 @endphp
 
 @extends('adminlte::page')
@@ -34,7 +35,7 @@
                 <div class="dashboard-icon mx-auto mb-2 icon-blue">
                     <i class="fas fa-user"></i>
                 </div>
-                <h5>{{ $locacao->cliente->nome }}</h5>
+                <h5>{{ Str::limit($locacao->cliente->nome , 20) }}</h5>
                 <small class="text-muted">Cliente</small>
             </div>
         </div>
@@ -59,7 +60,7 @@
                     <i class="fas fa-dollar-sign"></i>
                 </div>
                 <h3>R$ {{ number_format($locacao->valor_mensal,2,',','.') }}</h3>
-                <small class="text-muted">Valor Mensal</small>
+                <small class="text-muted">Valor Plano</small>
             </div>
         </div>
     </div>
@@ -145,7 +146,7 @@
             <div class="col-md-4 mb-3">
                 <div class="cliente-label">Telefone</div>
                 <div class="cliente-value">
-                    {{ $locacao->cliente->telefone }}
+                    {{ preg_replace('/(\d{2})(\d{5})(\d{4})/', '($1) $2-$3', $locacao->cliente->telefone) }}
                 </div>
             </div>
 
@@ -246,102 +247,173 @@
             HISTÓRICO FINANCEIRO
         ========================== --}}
      
-        <div class="card mb-4">
+        <div class="card card-outline card-secondary mb-4">
 
-            <div class="card-body p-0">
+    <div class="card-header">
 
-                <div class="p-3">
-                    <div class="d-flex align-items-center mb-1">
+        <h3 class="card-title mb-0">
 
-        <i class="fas fa-dollar-sign mr-3"
-           style="font-size:22px;color:#16a34a;"></i>
+            <i class="fas fa-dollar-sign mr-2"
+               style="font-size:22px;color:#16a34a;"></i>
 
-        <h5 class="mb-0">
             Histórico Financeiro
-        </h5>
+
+            <div>
+                <small class="text-muted ml-4">
+                    Todas as transações financeiras realizadas nesta locação
+                </small>
+            </div>
+
+        </h3>
+
+
+        <div class="card-tools">
+
+            <button type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse">
+
+                <i class="fas fa-minus"></i>
+
+            </button>
+
+        </div>
 
     </div>
 
-    <small class="text-muted">
-        Todas as transações financeiras realizadas nesta locação
-    </small>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                    <tr>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Forma</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
 
 
-                </div>
+                <tbody>
 
-                <table class="table table-hover mb-0">
+                    @forelse($locacao->pagamentos as $pagamento)
 
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Valor</th>
-                            <th>Forma</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+                    <tr>
 
-                    <tbody>
-                        @foreach($locacao->pagamentos as $pagamento)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($pagamento->data_pagamento)->format('d/m/Y') }}</td>
-                            <td>R$ {{ number_format($pagamento->valor,2,',','.') }}</td>
-                            <td>{{ ucfirst($pagamento->forma_pagamento) }}</td>
-                            <td>
-                        @if($pagamento->status == 'pago')
-
-    <span class="badge badge-success">
-        Pago
-    </span>
-
-@elseif($pagamento->status == 'pendente')
-
-    <span class="badge badge-warning">
-        Pendente
-    </span>
-
-@else
-
-    <span class="badge badge-danger">
-        Cancelado
-    </span>
-
-@endif 
+                        <td>
+                            {{ \Carbon\Carbon::parse($pagamento->data_pagamento)->format('d/m/Y') }}
                         </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
 
-                </table>
 
-            </div>
+                        <td>
+                            R$ {{ number_format($pagamento->valor,2,',','.') }}
+                        </td>
+
+
+                        <td>
+                            {{ ucfirst($pagamento->forma_pagamento) }}
+                        </td>
+
+
+                        <td>
+
+                            @if($pagamento->status == 'pago')
+
+                                <span class="badge badge-success">
+                                    Pago
+                                </span>
+
+
+                            @elseif($pagamento->status == 'pendente')
+
+                                <span class="badge badge-warning">
+                                    Pendente
+                                </span>
+
+
+                            @else
+
+                                <span class="badge badge-danger">
+                                    Cancelado
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+
+                    @empty
+
+                    <tr>
+
+                        <td colspan="4" class="text-center text-muted">
+
+                            Nenhum pagamento registrado
+
+                        </td>
+
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
         </div>
+
+    </div>
+
+</div>
 
 
         {{-- =========================
     HISTÓRICO DE RENOVAÇÕES
 ========================= --}}
-<div class="card mb-4">
+<div class="card card-outline card-secondary mb-4">
 
-    <div class="card-body p-0">
+    <div class="card-header">
 
-        <div class="p-3">
-
-    <div class="d-flex align-items-center mb-1">
+    <h3 class="card-title mb-0">
 
         <i class="fas fa-sync-alt mr-2"
            style="font-size:20px;color:#f97316;"></i>
 
-        <h5 class="mb-0">
-            Histórico de Renovações
-        </h5>
+        Histórico de Renovações
+
+        <div>
+            <small class="text-muted ml-4">
+                Todas as renovações realizadas nesta locação
+            </small>
+        </div>
+
+    </h3>
+
+
+    <div class="card-tools">
+
+        <button type="button"
+                class="btn btn-tool"
+                data-card-widget="collapse">
+
+            <i class="fas fa-minus"></i>
+
+        </button>
 
     </div>
 
-    <small class="text-muted">
-        Todas as renovações realizadas nesta locação
-    </small>
-
 </div>
+
+
+    <div class="card-body p-0">
 
         <table class="table table-hover mb-0">
 
@@ -400,94 +472,109 @@
 
 
 
+<div class="card card-outline card-secondary mb-4">
 
+    <div class="card-header">
 
-<div class="card shadow-sm border-0 mb-4">
+        <h3 class="card-title mb-0">
 
-    <div class="card-body">
+            <i class="far fa-calendar-alt text-primary mr-2"></i>
 
-        <div class="mb-4">
-
-    <div class="d-flex align-items-center mb-1">
-
-        <i class="far fa-calendar-alt text-primary mr-2"></i>
-
-        <h5 class="mb-0">
             Eventos da Locação
-        </h5>
+
+            <div>
+                <small class="text-muted ml-4">
+                    Histórico completo desta locação
+                </small>
+            </div>
+
+        </h3>
+
+
+        <div class="card-tools">
+
+            <button type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse">
+
+                <i class="fas fa-minus"></i>
+
+            </button>
+
+        </div>
 
     </div>
 
-    <small class="text-muted">
-        Histórico completo desta locação
-    </small>
 
-</div>
- @forelse($eventos as $evento)
+    <div class="card-body">
 
-            <div class="evento-item">
+       @if($eventos->count())
 
-                <div class="evento-icon">
+            <div class="timeline">
 
-                    @if(str_contains(strtolower($evento['titulo']), 'pagamento'))
-                        <div class="evento-circle pagamento">
-                            <i class="fas fa-dollar-sign"></i>
+                @foreach($eventos as $evento)
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-icon">
+
+                            @include(
+                                'locacoes.partials.historico-icon',
+                                ['evento' => $evento->tipo]
+                            )
+
                         </div>
 
-                    @elseif(str_contains(strtolower($evento['titulo']), 'renov'))
-                        <div class="evento-circle renovacao">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
+                        <div class="timeline-content">
 
-                    @else
-                        <div class="evento-circle locacao">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                    @endif
+                            <div class="d-flex justify-content-between align-items-center mb-2">
 
-                </div>
+                                <strong>
+                                    {{ $evento->titulo }}
+                                </strong>
 
-                <div class="evento-content">
+                                <small class="text-muted">
+                                    {{ $evento->created_at->format('d/m/Y H:i') }}
+                                </small>
 
-                    <div class="evento-topo">
-
-                        <div>
-
-                            <div class="evento-titulo">
-                                {{ $evento['titulo'] }}
                             </div>
 
-                            <div class="evento-descricao">
-                                {{ $evento['descricao'] }}
-                            </div>
+                            @if($evento->descricao)
 
-                        </div>
+                                <div>
+                                    {{ $evento->descricao }}
+                                </div>
 
-                        <div class="evento-data">
-                            {{ $evento['data'] }}
+                            @endif
+
                         </div>
 
                     </div>
 
-                </div>
+                @endforeach
 
             </div>
 
-        @empty
+        @else
 
-            <div class="text-center text-muted py-5">
-                Nenhum evento registrado.
+            <div class="text-center py-5">
+
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+
+                <h5>Nenhum histórico registrado</h5>
+
+                <p class="text-muted mb-0">
+                    Ainda não existem movimentações cadastradas para esta locação.
+                </p>
+
             </div>
 
-        @endforelse
-        
+        @endif
 
     </div>
 
 </div>
-
 </div>
-
     {{-- =========================
         AÇÕES (PADRÃO CLIENTES LATERAL)
     ========================== --}}
@@ -530,6 +617,17 @@
                     </button>
                     @endif
 
+                    
+                    @if($locacao->status == 'aguardando_entrega')
+
+<button class="btn btn-success btn-block" data-toggle="modal" data-target="#entregaModal{{ $locacao->uuid }}">
+<i class="fas fa-check"></i>
+Entregar Bike
+
+                </button>
+
+            @endif
+
                     @if($locacao->status == 'aguardando_retirada')
 
 <button
@@ -546,6 +644,22 @@ Retirada realizada
 
 @endif
 
+@if($locacao->status == 'aguardando_entrega' || $locacao->status == 'ativa')
+
+<button
+class="btn btn-primary btn-block mb-2"
+data-toggle="modal"
+data-target="#modalTrocarBike">
+
+<i class="fas fa-bicycle"></i>
+
+Trocar Bike
+</button>
+
+@endif
+
+
+
                 </div>
 
             </div>
@@ -559,7 +673,202 @@ Retirada realizada
 </div>
 
 
+<div class="modal fade"
+     id="entregaModal{{ $locacao->uuid }}"
+     tabindex="-1">
 
+    <div class="modal-dialog">
+
+        <form action="{{ route('locacoes.entregar', $locacao) }}"
+              method="POST">
+
+            @csrf
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Confirmar Entrega
+
+                    </h5>
+
+                    <button type="button"
+                            class="close"
+                            data-dismiss="modal">
+
+                        <span>&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p>
+
+                        Confirmar que a bike foi
+                        entregue ao cliente?
+
+                    </p>
+
+                    <div class="alert alert-info">
+
+                        <strong>Cliente:</strong>
+                        {{ $locacao->cliente->nome ?? '-' }}
+
+                        <br>
+
+                        <strong>Bike:</strong>
+                        {{ $locacao->bike->modelo ?? '-' }}
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+                    <button class="btn btn-success">
+
+                        Confirmar Entrega
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="modalTrocarBike" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+
+            <div class="modal-header spinmove-header">
+
+                <h5 class="modal-title">
+                    <i class="fas fa-bicycle mr-2"></i>
+                    Trocar Bike
+                </h5>
+
+                <button type="button" 
+                        class="close" 
+                        data-dismiss="modal">
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form action="{{ route('locacoes.trocarBike', $locacao->id) }}"
+                  method="POST">
+
+                @csrf
+
+
+                <div class="modal-body">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Bike atual
+                        </label>
+
+                        <input type="text"
+       class="form-control"
+       value="{{ ($locacao->bike->codigo ?? 'Sem código') }} - {{ ($locacao->bike->marca ?? 'Sem marca') }} "
+       disabled>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Nova bike
+                        </label>
+
+
+                        <select name="bike_id"
+                                class="form-control"
+                                required>
+
+
+                            <option value="">
+                                Selecione uma bike
+                            </option>
+
+
+                            @foreach($bikesDisponiveis as $bike)
+
+                                <option value="{{ $bike }}">
+
+                                    {{ $bike->codigo }} - {{ $bike->marca }}
+
+                                </option>
+
+                            @endforeach
+
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="modal-footer">
+
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button type="submit"
+                            class="btn btn-warning">
+
+                        Confirmar troca
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
 
 <div class="modal fade"
      id="pagamentoModal"
@@ -957,6 +1266,147 @@ $novaData =
     </div>
 
 </div>
+
+<style>
+
+.cliente-resumo-card{
+    border:0;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.cliente-resumo-card:hover{
+    transform:translateY(-3px);
+}
+
+
+.cliente-section-title{
+    font-size:18px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:20px;
+}
+
+.dashboard-card{
+    border:none;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.dashboard-icon{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#f3f4f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+}
+
+.dashboard-number{
+    font-size:28px;
+    font-weight:700;
+    line-height:1.2;
+}
+
+.dashboard-label{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.dashboard-line{
+    height:4px;
+}
+
+
+
+.spinmove-header{
+    background:#f8fafc;
+    border-bottom:1px solid #e5e7eb;
+    font-weight:600;
+}
+
+.timeline{
+    position:relative;
+    padding-left:35px;
+}
+
+.timeline:before{
+    content:'';
+    position:absolute;
+    left:11px;
+    top:0;
+    width:2px;
+    height:100%;
+    background:#e5e7eb;
+}
+
+.timeline-item{
+    position:relative;
+    margin-bottom:25px;
+}
+
+.timeline-icon{
+    position:absolute;
+    left:-40px;
+    top: 50%;
+    width:34px;
+    height:34px;
+    background:#fff;
+    border-radius:50%;
+    text-align:center;
+    line-height:24px;
+    box-shadow:0 0 0 4px #fff;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.timeline-content{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:15px;
+    border:1px solid #e5e7eb;
+}
+
+.badge{
+    font-size:12px;
+    padding:8px 12px;
+}
+
+.table thead th{
+    border-top:none;
+    background:#f8fafc;
+    font-weight:600;
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+
+iframe{
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+}
+
+@media (max-width:768px){
+
+    .dashboard-number{
+        font-size:22px;
+    }
+
+    .cliente-value{
+        margin-bottom:15px;
+    }
+
+}
+
+</style>
 @stop
 @section('js')
 

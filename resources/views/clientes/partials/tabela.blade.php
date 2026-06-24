@@ -15,7 +15,12 @@
                     <div>
 
                         <strong class="d-block">
-                            {{ $cliente->nome }}
+                           <a href="{{ route('clientes.show', $cliente) }}"
+   class="cliente-link nome-cliente" title="{{ $cliente->nome }}">
+    {{ $cliente->nome }}
+    <i class="fas fa-external-link-alt fa-xs ml-1"></i>
+</a>
+ 
                         </strong>
 
                         <small class="text-muted">

@@ -79,7 +79,7 @@
                 </div>
 
                 {{-- BOTÃO --}}
-                <div class="section-block actions-group">
+                <div class="section-block">
 <a href="{{ route('bikes.index') }}" class="btn btn-secondary">
                         Cancelar
                     </a>

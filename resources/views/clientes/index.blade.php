@@ -193,7 +193,7 @@
             <thead>
                 <tr>
 
-                    <th>Cliente</th>
+                    <th style="text-align: center;">Cliente</th>
 
                     <th style="text-align: center;">Telefone</th>
 
@@ -207,7 +207,7 @@
 
                     <th style="text-align: center;">Status</th>
 
-                    <th style="text-align: center;" width="220">Ações</th>
+                    <th style="text-align: center;" width="10">Ações</th>
 
                 </tr>
             </thead>
@@ -231,6 +231,25 @@
 <div class="mt-3">
    
 </div>
+<style>
+    .cliente-link{
+    color:#212529 !important;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.cliente-link:hover{
+    color:#ff6b00 !important;
+}
+.nome-cliente{
+    display:block;
+    max-width:250px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:600;
+}
+</style>
 @stop
 @section('js')
 <script>
