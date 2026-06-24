@@ -88,10 +88,7 @@ AAA TESTE NAV
 
             </div>
 
-            @forelse(
-                $topNotifications
-                as $item
-            )
+            @forelse($topNotifications as $item)
 
             <div class="
                 px-4
@@ -220,10 +217,7 @@ Notificações
 </div>
 
 
-@forelse(
-$topNotifications ?? []
-as $item
-)
+@forelse($topNotifications ?? [] as $item)
 
 <div class="
 border-t
