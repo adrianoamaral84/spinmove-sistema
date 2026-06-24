@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use App\Models\Notification;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,40 +22,56 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+ 
+public function boot(): void
 {
 
-     $topNotifications =
-       $topNotifications =
-Notification::with(
-    'plano'
-)
+    if (
+        Schema::hasTable(
+            'notifications'
+        )
+    ) {
 
-->where(
-    'lida',
-    false
-)
+        $topNotifications =
 
-->latest()
+        Notification::with(
+            'plano'
+        )
 
-->take(10)
+        ->where(
+            'lida',
+            false
+        )
 
-->get();
-    $topCount =
-$topNotifications
-->count();
+        ->latest()
 
-    View::share(
-        'topNotifications',
+        ->take(10)
+
+        ->get();
+
+        $topCount =
+
         $topNotifications
-    );
+        ->count();
 
-    View::share(
-        'topCount',
-        $topCount
-    );
+        View::share(
+            'topNotifications',
+            $topNotifications
+        );
+
+        View::share(
+            'topCount',
+            $topCount
+        );
+
+    }
 
 }
+
+
+
+
+
 
     
     protected function mapApiRoutes()
